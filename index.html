@@ -12,13 +12,54 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
+<body class="locked">
 
+  <!-- ── landing gate ──────────────────────────────────────── -->
+  <div class="gate" id="gate">
+    <div class="gate-half gate-left">
+      <canvas id="ascii-wave" aria-hidden="true"></canvas>
+      <div class="gate-content">
+        <h2 class="pixel">The Brief</h2>
+        <p>a quick scan for recruiters &amp; humans.</p>
+        <button class="enter mono" data-goto="top">enter <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+    <div class="gate-half gate-right">
+      <canvas id="disk" aria-hidden="true"></canvas>
+      <div class="gate-content">
+        <h2 class="pixel">The Evidence</h2>
+        <p>how i build — receipts included.</p>
+        <button class="enter mono" data-goto="work">enter <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+    <div class="gate-center">
+      <h1 class="gate-name">AAWHAN&nbsp;VYAS</h1>
+      <p class="gate-role mono">ai/ml engineer · evidence over vibes</p>
+    </div>
+  </div>
+
+  <!-- ── floating side rail ────────────────────────────────── -->
+  <aside class="rail" aria-label="quick navigation">
+    <a href="#work" title="work">
+      <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h4A1.5 1.5 0 0 1 8 2.5v4A1.5 1.5 0 0 1 6.5 8h-4A1.5 1.5 0 0 1 1 6.5v-4Zm9 0A1.5 1.5 0 0 1 11.5 1h2A1.5 1.5 0 0 1 15 2.5v2A1.5 1.5 0 0 1 13.5 6h-2A1.5 1.5 0 0 1 10 4.5v-2Zm-9 8A1.5 1.5 0 0 1 2.5 9h2A1.5 1.5 0 0 1 6 10.5v3A1.5 1.5 0 0 1 4.5 15h-2A1.5 1.5 0 0 1 1 13.5v-3Zm9 1.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0Z" transform="scale(0.9)"/></svg>
+    </a>
+    <a href="#linkedin" title="on linkedin">
+      <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M3.5 2a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM.5 5h3v10h-3V5Zm5.5 0h2.8v1.4h.04C9.3 5.5 10.6 4.8 12.3 4.8c3 0 3.7 2 3.7 4.6V15h-3v-4.9c0-1.2 0-2.7-1.7-2.7s-1.9 1.3-1.9 2.6V15H6V5Z"/></svg>
+    </a>
+    <a href="#about" title="about">
+      <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Zm.93-9.4-2.3.3-.04.03.9-.86a.7.7 0 0 0-.02-1 2.24 2.24 0 0 0-3.16.02L2.13 6.4a.7.7 0 0 0 .02 1 2.24 2.24 0 0 0 3.16-.02l.86-.9-2.3.3a.7.7 0 0 0-.1 1.39l3.32-.44a.7.7 0 0 0 .4-1.19L6.4 4.72a.84.84 0 0 1 1.19-.01l1.34 1.36Zm5.4 2.4a.7.7 0 0 0-1.4 0v.94l-.94-.94a.7.7 0 1 0-1 1l.94.94h-.93a.7.7 0 0 0 0 1.4h.94l-.94.94a.7.7 0 1 0 1 1l.93-.94v.94a.7.7 0 0 0 1.4 0v-.93l.94.93a.7.7 0 0 0 1-1l-.94-.94h.94a.7.7 0 0 0 0-1.4h-.93l.93-.94a.7.7 0 0 0 0-1l-.94.94V9Z"/></svg>
+    </a>
+    <button id="rail-chat" title="ask my resume" aria-label="ask my resume">
+      <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M2 2a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1v2.2a.6.6 0 0 0 1 .44L6.7 12H14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2Zm2 4h8a.6.6 0 1 1 0 1.2H4A.6.6 0 1 1 4 6Zm0 3h5a.6.6 0 1 1 0 1.2H4A.6.6 0 1 1 4 9Z"/></svg>
+    </button>
+  </aside>
+
+  <!-- ── page ──────────────────────────────────────────────── -->
   <header class="top">
-    <p class="idline">aawhan vyas <span class="role">· ai/ml engineer</span></p>
+    <p class="idline mono">aawhan vyas <span class="role">· ai/ml engineer</span></p>
     <nav class="top-links mono">
       <span class="status"><i aria-hidden="true"></i>open to full-time</span>
       <a href="https://github.com/aawhan0" target="_blank" rel="noopener">github</a>
@@ -29,7 +70,8 @@
 
   <main>
     <section class="intro">
-      <h1>I turn <mark>“what&nbsp;if?”</mark> into working software.</h1>
+      <h1 class="sr-only">I turn “what if?” into working software.</h1>
+      <canvas id="dot-head" aria-hidden="true"></canvas>
       <p class="lede">ML platforms and LLM systems that <em>show their receipts</em> — every line
       on this page links to the repo, benchmark or PR behind it.</p>
       <p class="statline mono"><b id="stat-repos">61</b> public repos · <b id="stat-stars">19</b> stars ·
@@ -66,7 +108,7 @@
             <p>Hybrid retrieval (vector + BM25 + RRF + BGE reranking): +86% recall@5,
             +75% MRR, +84% nDCG@10 over the RRF baseline. Answers cite the exact page
             of the source PDF.</p>
-            <p class="r-stack mono">react · fastapi · postgresql/pgvector · groq · live at dasaiko.dev</p>
+            <p class="r-stack mono">react · fastapi · postgresql/pgvector · groq</p>
           </div>
         </li>
 
@@ -136,7 +178,7 @@
           </div>
           <div class="row-detail">
             <p>Detects the track playing on YouTube and opens its Genius page. Small,
-              useful, shipped.</p>
+            useful, shipped.</p>
             <p class="r-stack mono">javascript · chrome-extension</p>
           </div>
         </li>
@@ -200,14 +242,25 @@
       and way too many tabs. Looking for a team where <em>“evidence-backed”</em> is a feature,
       not a bug.</p>
     </section>
+
+    <section id="contact">
+      <h2 class="label mono">contact</h2>
+      <div class="channels">
+        <div class="ch"><span class="ch-k mono">email</span><a href="mailto:vyasaawhan@gmail.com">vyasaawhan@gmail.com <span aria-hidden="true">→</span></a></div>
+        <div class="ch"><span class="ch-k mono">github</span><a href="https://github.com/aawhan0" target="_blank" rel="noopener">github.com/aawhan0 <span aria-hidden="true">↗</span></a></div>
+        <div class="ch"><span class="ch-k mono">linkedin</span><a href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">in/aawhanvyas <span aria-hidden="true">↗</span></a></div>
+        <div class="ch"><span class="ch-k mono">resume</span><a href="https://github.com/aawhan0/Resume" target="_blank" rel="noopener">download pdf <span aria-hidden="true">↗</span></a></div>
+        <div class="ch"><span class="ch-k mono">based in</span><span class="ch-v">bhopal, india · IST (utc+5:30)</span></div>
+      </div>
+    </section>
   </main>
 
   <footer class="foot mono">
     <span>© <span id="year">2026</span> aawhan vyas</span>
-    <span><a href="mailto:vyasaawhan@gmail.com">vyasaawhan@gmail.com</a> · <a href="https://github.com/aawhan0/aawhan0.github.io" target="_blank" rel="noopener">source ↗</a></span>
+    <span><a href="https://github.com/aawhan0/aawhan0.github.io" target="_blank" rel="noopener">source ↗</a></span>
   </footer>
 
-  <!-- floating grounded chat -->
+  <!-- ── floating grounded chat ────────────────────────────── -->
   <button class="fab mono" id="fab" aria-label="ask my resume" aria-expanded="false">ask</button>
   <div class="panel" id="panel" role="dialog" aria-label="Ask my resume">
     <div class="panel-head mono">

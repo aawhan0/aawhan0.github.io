@@ -2,9 +2,10 @@
 
 Personal portfolio of [Aawhan Vyas](https://github.com/aawhan0), live at **[aawhan0.me](https://aawhan0.me/)**.
 
-One plain page: paper background, serif voice, mono structure. Every line links to its
-proof — no decoration that doesn't inform. Plain HTML/CSS/JS, no build step. Deployed
-automatically by GitHub Pages from `main`.
+Dark console with a cinematic split landing: **"The Brief"** (ascii wave → the page) and
+**"The Evidence"** (particle accretion disk → the page). Interior: dot-matrix headline,
+numbered evidence rows, LinkedIn one-liners, key-value contact channels, floating
+grounded chat. Plain HTML/CSS/JS, no build step. Deployed automatically by GitHub Pages from `main`.
 
 ## Page
 
