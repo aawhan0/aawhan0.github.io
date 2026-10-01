@@ -80,11 +80,81 @@ em { font-style: italic; }
   clip: rect(0 0 0 0); white-space: nowrap;
 }
 
+/* ── boot / loader ───────────────────────────────────────── */
+/* Sits above the gate (z 200) while it plays, then lifts away so the two
+   halves are revealed underneath. It never shares space with the gate —
+   gate halves stay hidden until .gate--live lands. */
+.boot {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center;
+  background: #0b0b0e;
+  color: #e9e9ee;
+  transition: opacity 0.55s ease, visibility 0.55s ease;
+}
+.boot.done { opacity: 0; visibility: hidden; pointer-events: none; }
+.boot-inner { text-align: center; padding: 2rem; width: min(38rem, 92vw); }
+.boot-status {
+  font-size: 0.66rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: #82828e; margin-bottom: 0.85rem; min-height: 1em;
+}
+.boot-name {
+  font-family: var(--ui); font-weight: 700;
+  font-size: clamp(1.3rem, 5.2vw, 3.2rem);
+  letter-spacing: 0.12em; line-height: 1.15;
+  color: #e9e9ee;
+  white-space: nowrap;          /* never wrap mid-decode */
+}
+/* per-letter scramble, driven by JS swapping textContent.
+   Letters must be VISIBLE while scrambling — only the role line waits. */
+.boot-name span {
+  display: inline-block;
+  transform: translateY(0.3em);
+  opacity: 0.35;
+  transition: opacity 0.18s linear, transform 0.18s ease;
+}
+.boot-name span:not(.glyph) { opacity: 1; transform: none; }
+.boot-name span.glyph { color: #ffb26b; }
+.boot-role {
+  margin-top: 1.1rem; font-size: 0.74rem; letter-spacing: 0.26em;
+  text-transform: lowercase; color: #b6b6c2;
+  opacity: 0; transform: translateY(0.4em);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.boot.in .boot-role { opacity: 1; transform: none; }
+.boot-bar {
+  margin: 1.7rem auto 0; width: min(19rem, 70vw); height: 2px;
+  background: rgba(255, 255, 255, 0.12); overflow: hidden;
+}
+.boot-bar i {
+  display: block; height: 100%; width: 0%;
+  background: #ffb26b; transition: width 0.2s linear;
+}
+/* a soft CRT flicker across the whole loader — no hard edges */
+.boot::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(255, 178, 107, 0.055) 50%, transparent 100%);
+  transform: translateY(-100%);
+  animation: boot-sweep 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes boot-sweep { to { transform: translateY(100%); } }
+
+/* gate halves stay hidden until boot finishes — no overlap, no flash.
+   NB: only opacity here — the transform transition on .gate-half must survive
+   so the slide-away exit still animates. */
+.gate-half { opacity: 0; }
+.gate--live .gate-left { transition-delay: 0.05s, 0s; }
+.gate--live .gate-right { transition-delay: 0.17s, 0s; }
+.gate--live .gate-half { opacity: 1; }
+
 /* ── landing gate ────────────────────────────────────────── */
 .gate {
   position: fixed; inset: 0; z-index: 100;
   display: grid; grid-template-columns: 1fr 1fr;
-  background: var(--bg);
+  /* the gate is its own dark broadcast — pin every colour it inherits so a
+     light theme can never wash it out (this was the "clear cookies" bug) */
+  background: #0b0b0e;
+  color: #e9e9ee;
 }
 .gate-half {
   position: relative; overflow: hidden;
@@ -101,12 +171,12 @@ em { font-style: italic; }
   position: absolute; left: clamp(1.4rem, 4vw, 3rem); bottom: clamp(1.6rem, 5vh, 3rem); z-index: 2;
 }
 .gate-content h2 { font-size: clamp(2.2rem, 4.5vw, 3.4rem); line-height: 1; }
-.gate-content p { color: var(--muted); font-size: 0.86rem; margin: 0.5rem 0 1.1rem; }
+.gate-content p { color: #82828e; font-size: 0.86rem; margin: 0.5rem 0 1.1rem; }
 .enter {
   background: none; border: none; cursor: pointer;
-  color: var(--text); font-size: 0.82rem; font-weight: 700;
+  color: #e9e9ee; font-size: 0.82rem; font-weight: 700;
   display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.45rem 0; border-bottom: 1px solid var(--line);
+  padding: 0.45rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.16);
   transition: color 0.2s, border-color 0.2s, gap 0.2s;
 }
 .enter:hover { color: var(--accent); border-color: var(--accent); gap: 0.9rem; }
@@ -618,7 +688,9 @@ html.light .chips img { filter: invert(1); opacity: 0.7; }
 /* ── reduced motion ──────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .gate-half, .tv, .chapter, .theme-toggle { transition: none; }
+  .gate-half, .tv, .chapter, .theme-toggle, .boot { transition: none; }
+  .boot::after { animation: none; display: none; }
+  .boot-name span, .boot-role { transition: none; opacity: 1; transform: none; }
   .row.open .row-detail { animation: none; }
   .tv-bars span { animation: none; }
   .bm-eq i { animation: none; }

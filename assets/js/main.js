@@ -9,12 +9,17 @@
   /* ── theme toggle (dark default, like a certain broadcast) ── */
   const root = document.documentElement;
   const ttLabel = document.getElementById("tt-label");
-  const applyTheme = (light) => {
+  const applyTheme = (light, persist = true) => {
     root.classList.toggle("light", light);
     if (ttLabel) ttLabel.textContent = light ? "light mode" : "dark mode";
-    try { localStorage.setItem("theme", light ? "light" : "dark"); } catch (e) {}
+    if (persist) { try { localStorage.setItem("theme", light ? "light" : "dark"); } catch (e) {} }
   };
-  try { applyTheme(document.body.dataset.defaultTheme === "light" || localStorage.getItem("theme") === "light"); } catch (e) {}
+  /* On load: an explicit stored choice always wins; otherwise fall back to the
+     page's own default. Never write on load — a page default must not become a
+     sticky global preference (that used to leak light mode onto the gate). */
+  let stored = null;
+  try { stored = localStorage.getItem("theme"); } catch (e) {}
+  applyTheme(stored ? stored === "light" : document.body.dataset.defaultTheme === "light", false);
   document.getElementById("theme-toggle")?.addEventListener("click", () =>
     applyTheme(!root.classList.contains("light")));
 
@@ -156,6 +161,88 @@
       ctx.strokeRect(0.5, 0.5, W - 1, H - 1);
     };
   })());
+  /* ── boot: scramble the name in, then lift to reveal the gate ── */
+  /* deep links bypass the boot entirely — no loader flash before redirecting */
+  const deepLink = location.hash && location.hash !== "#";
+  const boot = document.getElementById("boot");
+  const bootName = document.getElementById("boot-name");
+  const bootStatus = document.getElementById("boot-status");
+  const bootFill = document.getElementById("boot-fill");
+
+  const revealGate = () => {
+    if (gate) gate.classList.add("gate--live");
+    if (boot) {
+      boot.classList.add("done");
+      setTimeout(() => boot.remove(), 700);
+    }
+  };
+
+  if (deepLink) {
+    if (boot) boot.remove();
+  } else if (boot && bootName) {
+    const text = bootName.dataset.text || "AAWHAN VYAS";
+    const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/\\<>*#=+";
+    const STATUS = ["initialising", "loading profile", "syncing signal", "ready"];
+
+    /* build one span per character. Spaces become non-breaking so the name
+       never wraps mid-word while it decodes. */
+    bootName.textContent = "";
+    const spans = [];
+    for (const ch of text) {
+      if (ch === " ") {
+        bootName.appendChild(document.createTextNode(" "));
+        continue;
+      }
+      const s = document.createElement("span");
+      s.textContent = ch;
+      s.dataset.ch = ch;                       // remember the real letter
+      s.style.setProperty("--i", String(spans.length));
+      bootName.appendChild(s);
+      spans.push(s);
+    }
+
+    if (reduced) {
+      boot.classList.add("in");
+      if (bootFill) bootFill.style.width = "100%";
+      revealGate();
+    } else {
+      let frame = 0;
+      const TOTAL = 66;                       // ~1.1s at 60fps
+      const tick = () => {
+        frame++;
+        const progress = frame / TOTAL;
+        // every letter resolves left-to-right; ahead of the wave they scramble
+        const settled = Math.floor(progress * (spans.length + 3));
+        spans.forEach((s, i) => {
+          if (i < settled) {
+            s.textContent = s.dataset.ch;            // resolved — show the real letter
+            s.classList.remove("glyph");
+          } else if (Math.random() < 0.55) {
+            s.textContent = GLYPHS[(Math.random() * GLYPHS.length) | 0];
+            if (!s.classList.contains("glyph")) s.classList.add("glyph");
+          }
+        });
+        if (bootFill) bootFill.style.width = Math.min(100, (progress * 100).toFixed(1)) + "%";
+        if (bootStatus) bootStatus.textContent = STATUS[Math.min(STATUS.length - 1, Math.floor(progress * STATUS.length))];
+
+        if (frame < TOTAL) {
+          requestAnimationFrame(tick);
+        } else {
+          spans.forEach((s) => { s.textContent = s.dataset.ch; s.classList.remove("glyph"); });
+          boot.classList.add("in");
+          if (bootFill) bootFill.style.width = "100%";
+          if (bootStatus) bootStatus.textContent = STATUS[STATUS.length - 1];
+          setTimeout(revealGate, 620);
+        }
+      };
+      requestAnimationFrame(tick);
+    }
+    // failsafe: never leave the visitor staring at the loader
+    setTimeout(revealGate, 4200);
+  } else if (gate) {
+    gate.classList.add("gate--live");
+  }
+
   const enterGate = (goto) => {
     if (!gate || gate.classList.contains("away")) return;
     gate.classList.add("away");
