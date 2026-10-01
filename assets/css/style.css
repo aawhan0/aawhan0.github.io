@@ -842,6 +842,14 @@ html.light .mx-row .chips span:hover { background: rgba(0, 0, 0, 0.04); }
 }
 .chapter.on { opacity: 1; transform: none; }
 .ch-k { font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+
+/* every section gets its own hue so it reads as its own place.
+   --hue is set per chapter via data-hue in story.html.               */
+.chapter { --hue: 32; }
+.chapter .ch-k { color: hsl(var(--hue) 85% 68%); }
+.chapter .ch-big em { color: hsl(var(--hue) 90% 66%); }
+.chapter .ch-link { color: hsl(var(--hue) 85% 68%); }
+.chapter .ch-link:hover { color: hsl(var(--hue) 95% 76%); }
 .ch-big {
   font-family: var(--display); font-weight: 400;
   font-size: clamp(2rem, 5vw, 3.6rem); line-height: 1.06;
@@ -856,6 +864,11 @@ html.light .mx-row .chips span:hover { background: rgba(0, 0, 0, 0.04); }
 }
 .ch-p { color: var(--soft); max-width: 52ch; margin: 1.2rem auto 0; font-size: 0.98rem; line-height: 1.7; text-shadow: 0 1px 12px rgba(0,0,0,0.8); }
 .ch-p b { color: var(--accent); }
+/* the story canvas gets brighter in a few scenes, so the copy needs a
+   stronger scrim than the flat pages use to stay readable over it.   */
+.tour .ch-big { text-shadow: 0 2px 34px rgba(0,0,0,0.92), 0 0 80px rgba(0,0,0,0.7); }
+.tour .ch-p { text-shadow: 0 1px 16px rgba(0,0,0,0.95), 0 0 46px rgba(0,0,0,0.8); }
+.tour .ch-k { text-shadow: 0 1px 12px rgba(0,0,0,0.95); }
 .ch-link { color: var(--accent); }
 .ch-steps { color: var(--text); letter-spacing: 0.08em; }
 .ch-steps b { color: var(--accent); }
