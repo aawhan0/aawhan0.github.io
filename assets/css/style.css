@@ -89,6 +89,7 @@ em { font-style: italic; }
   display: grid; place-items: center;
   background: #0b0b0e;
   color: #e9e9ee;
+  pointer-events: none;        /* never swallow a click, even mid-animation */
   transition: opacity 0.55s ease, visibility 0.55s ease;
 }
 .boot.done { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -160,7 +161,27 @@ em { font-style: italic; }
   position: relative; overflow: hidden;
   border-right: 1px solid var(--line);
   transition: transform 0.75s cubic-bezier(0.7, 0, 0.2, 1), opacity 0.6s ease;
+  cursor: pointer;
 }
+/* hover/focus cue — sits above the canvas but never blocks its clicks */
+.gate-half::after {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 178, 107, 0);
+  background: rgba(255, 178, 107, 0);
+  transition: box-shadow 0.28s ease, background 0.28s ease;
+}
+.gate-half:hover::after,
+.gate-half:focus-visible::after,
+.gate-half:focus-within::after {
+  box-shadow: inset 0 0 0 2px rgba(255, 178, 107, 0.65);
+  background: rgba(255, 178, 107, 0.05);
+}
+.gate-half:focus { outline: none; }
+.gate-half:hover .enter,
+.gate-half:focus-within .enter { color: var(--accent); border-color: var(--accent); gap: 0.9rem; }
+.gate-half:hover .gate-content h2,
+.gate-half:focus-within .gate-content h2 { color: #fff; }
 .gate-right { border-right: none; }
 .gate.away .gate-left { transform: translateX(-102%); }
 .gate.away .gate-right { transform: translateX(102%); }

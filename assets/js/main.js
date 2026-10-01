@@ -206,11 +206,11 @@
       if (bootFill) bootFill.style.width = "100%";
       revealGate();
     } else {
-      let frame = 0;
-      const TOTAL = 66;                       // ~1.1s at 60fps
-      const tick = () => {
-        frame++;
-        const progress = frame / TOTAL;
+      let start = null;
+      const DURATION = 1100;                   // ms — framerate-independent
+      const tick = (now) => {
+        if (start === null) start = now;
+        const progress = Math.min(1, (now - start) / DURATION);
         // every letter resolves left-to-right; ahead of the wave they scramble
         const settled = Math.floor(progress * (spans.length + 3));
         spans.forEach((s, i) => {
@@ -222,10 +222,10 @@
             if (!s.classList.contains("glyph")) s.classList.add("glyph");
           }
         });
-        if (bootFill) bootFill.style.width = Math.min(100, (progress * 100).toFixed(1)) + "%";
+        if (bootFill) bootFill.style.width = (progress * 100).toFixed(1) + "%";
         if (bootStatus) bootStatus.textContent = STATUS[Math.min(STATUS.length - 1, Math.floor(progress * STATUS.length))];
 
-        if (frame < TOTAL) {
+        if (progress < 1) {
           requestAnimationFrame(tick);
         } else {
           spans.forEach((s) => { s.textContent = s.dataset.ch; s.classList.remove("glyph"); });
@@ -237,8 +237,8 @@
       };
       requestAnimationFrame(tick);
     }
-    // failsafe: never leave the visitor staring at the loader
-    setTimeout(revealGate, 4200);
+    // failsafe: never leave the visitor staring at the loader (nor able to click through it)
+    setTimeout(revealGate, 2600);
   } else if (gate) {
     gate.classList.add("gate--live");
   }
@@ -260,8 +260,20 @@
       // deep links live on the brief route now — carry the anchor over
       window.location.replace("brief/" + location.hash);
     } else {
+      /* the whole half is the target, not just the button — canvas clicks
+         bubble up here. The button keeps its own listener too, but enterGate
+         is idempotent so a double fire is harmless. */
+      document.querySelectorAll(".gate-half").forEach((half) => {
+        half.addEventListener("click", () => enterGate(half.dataset.goto));
+        half.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+            e.preventDefault();
+            enterGate(half.dataset.goto);
+          }
+        });
+      });
       document.querySelectorAll(".enter").forEach((b) =>
-        b.addEventListener("click", () => enterGate(b.dataset.goto)));
+        b.addEventListener("click", (e) => { e.stopPropagation(); enterGate(b.dataset.goto); }));
     }
   }
 
