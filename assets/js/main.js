@@ -73,14 +73,20 @@
     }
   });
 
-  // right: behind the scenes — interstellar black hole through a thermal camera
+  // right: behind the scenes — false-colour thermal camera over a convecting field
   makeScene(document.getElementById("disk"), (() => {
-    const BW = 320, BH = 380;
+    const BW = 300, BH = 360;
+    const GW = 150, GH = 180;            // coarse field, bilinearly upsampled — cheap + smooth
+    const field = new Float32Array(GW * GH);
     let buf = null, bufCtx = null, img = null, lut = null;
+
+    /* full-spectrum ironbow: indigo → violet → magenta → coral → amber → white.
+       hotter always reads brighter, so the palette carries the meaning. */
     const buildLut = () => {
       const stops = [
-        [0.0, 0, 0, 0], [0.16, 28, 0, 62], [0.36, 122, 14, 52],
-        [0.56, 208, 56, 14], [0.74, 255, 132, 0], [0.88, 255, 216, 76], [1.0, 255, 255, 238],
+        [0.00, 4, 5, 14], [0.10, 26, 14, 74], [0.22, 74, 24, 143], [0.34, 140, 32, 160],
+        [0.46, 201, 45, 140], [0.58, 236, 78, 106], [0.70, 250, 140, 60], [0.82, 253, 196, 74],
+        [0.92, 246, 236, 150], [1.00, 255, 255, 255],
       ];
       lut = new Uint8ClampedArray(256 * 3);
       for (let i = 0; i < 256; i++) {
@@ -95,6 +101,31 @@
         lut[i * 3 + 2] = a[3] + (b[3] - a[3]) * k;
       }
     };
+    /* deterministic value noise — no allocation, no per-frame drift */
+    const hash = (x, y) => {
+      let h = Math.imul(x, 374761393) + Math.imul(y, 668265263);
+      h = Math.imul(h ^ (h >>> 13), 1274126177);
+      return ((h ^ (h >>> 16)) >>> 0) / 4294967295;
+    };
+    const smooth = (t) => t * t * (3 - 2 * t);
+    const vnoise = (x, y) => {
+      const xi = Math.floor(x), yi = Math.floor(y);
+      const xf = smooth(x - xi), yf = smooth(y - yi);
+      const a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1);
+      const top = a + (b - a) * xf, bot = c + (d - c) * xf;
+      return top + (bot - top) * yf;
+    };
+    const fbm = (x, y) => vnoise(x, y) * 0.66 + vnoise(x * 2.07 + 11.3, y * 2.07 - 7.1) * 0.34;
+
+    /* drifting heat cells — the subject the camera is watching */
+    const cells = Array.from({ length: 6 }, (_, i) => ({
+      x: 0.14 + 0.72 * Math.abs(Math.sin(i * 2.71 + 0.6)),
+      y: 0.16 + 0.68 * Math.abs(Math.cos(i * 1.93 + 0.4)),
+      r: 0.085 + 0.07 * Math.abs(Math.sin(i * 3.17 + 1.1)),
+      a: 0.45 + 0.5 * Math.abs(Math.cos(i * 1.29 + 2.2)),
+      ph: i * 1.77, sp: 0.22 + 0.07 * i,
+    }));
+
     return (ctx, W, H, t) => {
       if (!buf) {
         buf = document.createElement("canvas");
@@ -103,61 +134,76 @@
         img = bufCtx.createImageData(BW, BH);
         buildLut();
       }
+
+      /* ── 1. coarse field: domain-warped fbm + heat cells + rising plumes ── */
+      for (let gy = 0; gy < GH; gy++) {
+        const v = gy / GH;
+        for (let gx = 0; gx < GW; gx++) {
+          const u = gx / GW;
+          // domain warp gives the fluid its curling, non-repeating structure
+          const warp = Math.sin(v * 7.3 + t * 0.55) * 0.34 + Math.sin(u * 5.1 - t * 0.42) * 0.24;
+          let f = fbm(u * 5.6 + warp, v * 5.6 - warp - t * 0.2) * 1.1;
+          // hottest cores punch through the noise floor
+          for (let c = 0; c < cells.length; c++) {
+            const k = cells[c];
+            const dx = (u - (k.x + Math.sin(t * k.sp + k.ph) * 0.1)) * 1.45;
+            const dy = v - (k.y + Math.cos(t * k.sp * 0.75 + k.ph) * 0.075);
+            f += k.a * 0.5 * Math.exp(-(dx * dx + dy * dy) / (k.r * k.r));
+          }
+          // convection plumes rising out of frame
+          f += 0.14 * Math.sin(u * 11 + Math.sin(v * 4.2 + t * 0.8) * 1.6 + t * 0.85) * Math.max(0, 1 - v * 0.8);
+          field[gy * GW + gx] = f;
+        }
+      }
+
+      /* ── 2. colourise: isotherms, vignette, rolling refresh band, grain ── */
       const d = img.data;
-      const cx = BW / 2, cy = BH * 0.5;
-      const Rh = BH * 0.155;   // event horizon radius
-      let seed = 987654321;
-      const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+      const sx = GW / BW, sy = GH / BH;
+      const sweep = ((t * 0.12) % 1.45) - 0.22;
+      const frame = (t * 60) | 0;
       for (let y = 0; y < BH; y++) {
+        const fy = y * sy, gy0 = Math.min(GH - 1, fy | 0), gy1 = Math.min(GH - 1, gy0 + 1), ty = fy - gy0;
+        const r0 = gy0 * GW, r1 = gy1 * GW;
         for (let x = 0; x < BW; x++) {
           const i = (y * BW + x) * 4;
-          const px = (x - cx) / Rh, py = (y - cy) / Rh;
-          const r = Math.hypot(px, py);
-          let v = 0;
-          // doppler beaming: the side spinning toward us burns brighter
-          const doppler = 1 + 0.8 * -Math.sign(px) * Math.min(1, Math.abs(px) / 2.4);
-          const angle = Math.atan2(py, px);
-          const streak = 0.7 + 0.3 * Math.sin(angle * 21 + t * 2.4 + r * 4.5);
-          // front disk — crosses in front of the horizon, below the center line
-          const f = Math.hypot(px / 2.75, (py - 0.1) / 0.38);
-          if (py > 0.02 && Math.abs(f - 1) < 0.13) {
-            v = Math.max(v, (1 - Math.abs(f - 1) / 0.13) * doppler * streak);
-          } else if (py > 0.02 && f >= 1 && f < 1.35) {
-            v = Math.max(v, (1 - (f - 1) / 0.35) * 0.35 * doppler * streak);
-          }
-          if (r >= 1) {
-            // lensed far side — the fat arc arched over the top
-            const u = Math.hypot(px / 1.48, (py + 0.05) / 1.12);
-            if (py < -0.04 && Math.abs(u - 1) < 0.15) {
-              v = Math.max(v, (1 - Math.abs(u - 1) / 0.15) * (0.45 + 0.55 * doppler) * streak);
-            }
-            // lensed underside — the smaller mirrored arc below the disk
-            const lo = Math.hypot(px / 1.1, (py - 0.06) / 0.75);
-            if (py > 0.3 && Math.abs(lo - 1) < 0.12) {
-              v = Math.max(v, (1 - Math.abs(lo - 1) / 0.12) * 0.75 * doppler * streak);
-            }
-            // soft halo hugging the horizon
-            if (r < 1.7) v = Math.max(v, (1 - (r - 1) / 0.7) * 0.14 * doppler);
-            // photon ring — thin, right against the horizon
-            if (Math.abs(r - 1.045) < 0.028) v = Math.max(v, 0.95);
-          }
-          // thermal grain
-          v = Math.min(1, Math.max(0, v + (rnd() - 0.5) * 0.08));
-          const q = Math.round(v * 255);
+          const fx = x * sx, gx0 = Math.min(GW - 1, fx | 0), gx1 = Math.min(GW - 1, gx0 + 1), tx = fx - gx0;
+          // bilinear upsample of the coarse field
+          const top = field[r0 + gx0] + (field[r0 + gx1] - field[r0 + gx0]) * tx;
+          const bot = field[r1 + gx0] + (field[r1 + gx1] - field[r1 + gx0]) * tx;
+          let v = (top + (bot - top) * ty - 0.18) * 1.12;
+          v = v < 0 ? 0 : v > 1 ? 1 : v;
+          v = v * v * (3 - 2 * v);                       // gentle S-curve for contrast
+          // isotherms — the contour banding that reads as an instrument
+          if (Math.abs(((v * 8) % 1) - 0.5) * 2 > 0.88) v = Math.min(1, v + 0.32);
+          // rolling refresh band sweeping down the sensor
+          const s = y / BH - sweep;
+          v += 0.1 * Math.exp(-(s * s) / 0.00098);
+          // vignette, then sensor grain
+          v *= 1 - 0.5 * Math.pow(Math.hypot(x / BW - 0.5, y / BH - 0.5) * 1.42, 2.4);
+          v += (hash(x + frame, y) - 0.5) * 0.05;
+          v = v < 0 ? 0 : v > 1 ? 1 : v;
+          const q = (v * 255) | 0;
           d[i] = lut[q * 3]; d[i + 1] = lut[q * 3 + 1]; d[i + 2] = lut[q * 3 + 2]; d[i + 3] = 255;
         }
       }
       bufCtx.putImageData(img, 0, 0);
       ctx.imageSmoothingEnabled = true;
       ctx.drawImage(buf, 0, 0, W, H);
-      // thermal camera chrome: scanlines + rolling refresh band
-      ctx.fillStyle = "rgba(0,0,0,0.16)";
+      // instrument chrome: scanlines, corner brackets, frame
+      ctx.fillStyle = "rgba(0,0,0,0.13)";
       for (let y = 0; y < H; y += 6 * dpr) ctx.fillRect(0, y, W, dpr);
-      const roll = ((t * 0.1) % 1) * H;
-      ctx.fillStyle = "rgba(255,255,255,0.045)";
-      ctx.fillRect(0, roll, W, 16 * dpr);
-      ctx.strokeStyle = "rgba(255,255,255,0.1)";
+      ctx.strokeStyle = "rgba(255,255,255,0.2)";
       ctx.lineWidth = dpr;
+      const m = 15 * dpr, L = 20 * dpr;
+      ctx.beginPath();
+      [[m, m, 1, 1], [W - m, m, -1, 1], [m, H - m, 1, -1], [W - m, H - m, -1, -1]]
+        .forEach(([cx, cy, dx, dy]) => {
+          ctx.moveTo(cx, cy + dy * L);
+          ctx.lineTo(cx, cy);
+          ctx.lineTo(cx + dx * L, cy);
+        });
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(255,255,255,0.09)";
       ctx.strokeRect(0.5, 0.5, W - 1, H - 1);
     };
   })());

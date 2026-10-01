@@ -163,25 +163,86 @@ em { font-style: italic; }
   transition: transform 0.75s cubic-bezier(0.7, 0, 0.2, 1), opacity 0.6s ease;
   cursor: pointer;
 }
-/* hover/focus cue — sits above the canvas but never blocks its clicks */
+/* hover/focus cue — sits above the canvas but never blocks its clicks.
+   Two stacked jobs in one pseudo: the amber focus ring, and the specular
+   sheen that sweeps across like light on glass. The sheen rides in layer 1
+   of `background` so it can be driven purely by background-position;
+   layer 2 is the flat tint (background-color, transitioned on its own).
+   NB: only the fill value changes on hover — never touch `background`
+   shorthand here, it would reset position and kill the sweep. */
 .gate-half::after {
   content: ""; position: absolute; inset: 0; z-index: 1;
   pointer-events: none;
   box-shadow: inset 0 0 0 1px rgba(255, 178, 107, 0);
-  background: rgba(255, 178, 107, 0);
-  transition: box-shadow 0.28s ease, background 0.28s ease;
+  background-image: linear-gradient(115deg,
+    rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.05) 45%,
+    rgba(255, 255, 255, 0.19) 50%, rgba(255, 255, 255, 0.05) 55%, rgba(255, 255, 255, 0) 60%);
+  background-size: 240% 100%;
+  background-position: -130% 0;
+  background-color: rgba(255, 178, 107, 0);
+  transition: box-shadow 0.28s ease, background-color 0.28s ease,
+              background-position 0.95s cubic-bezier(0.22, 0.75, 0.2, 1);
 }
 .gate-half:hover::after,
 .gate-half:focus-visible::after,
 .gate-half:focus-within::after {
   box-shadow: inset 0 0 0 2px rgba(255, 178, 107, 0.65);
-  background: rgba(255, 178, 107, 0.05);
+  background-color: rgba(255, 178, 107, 0.05);
+  background-position: 230% 0;
 }
 .gate-half:focus { outline: none; }
 .gate-half:hover .enter,
 .gate-half:focus-within .enter { color: var(--accent); border-color: var(--accent); gap: 0.9rem; }
 .gate-half:hover .gate-content h2,
 .gate-half:focus-within .gate-content h2 { color: #fff; }
+
+/* ── hover: reflect + glow ──────────────────────────────────────
+   Each half gets its own signature treatment so the two don't just
+   light up identically — left reads as a cold phosphor screen waking
+   up, right as a thermal frame blowing out to overexposure.
+   Both are hover AND focus-within: keyboard users get the same
+   affordance as the mouse, which the plain :hover rule did not. */
+.gate-half canvas {
+  transition: filter 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.65s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.45s ease;
+}
+/* gentle push-in — sells the panel as a lit surface rather than a flat image */
+.gate-half:hover canvas,
+.gate-half:focus-within canvas { transform: scale(1.035); }
+
+.gate-left:hover canvas,
+.gate-left:focus-within canvas {
+  opacity: 1;
+  filter: brightness(1.12) contrast(1.1) saturate(1.5)
+          drop-shadow(0 0 14px rgba(126, 168, 255, 0.45));
+}
+.gate-right:hover canvas,
+.gate-right:focus-within canvas {
+  filter: brightness(1.02) contrast(1.16) saturate(1.7)
+          drop-shadow(0 0 18px rgba(255, 112, 62, 0.5));
+}
+
+/* inner bloom hugging the panel edge — the glow's source */
+.gate-left:hover::after,
+.gate-left:focus-within::after {
+  box-shadow: inset 0 0 0 2px rgba(163, 199, 255, 0.7),
+              inset 0 0 70px rgba(96, 142, 255, 0.16);
+}
+.gate-right:hover::after,
+.gate-right:focus-within::after {
+  box-shadow: inset 0 0 0 2px rgba(255, 186, 116, 0.7),
+              inset 0 0 76px rgba(255, 96, 48, 0.16);
+}
+
+.gate-left:hover .gate-content h2,
+.gate-left:focus-within .gate-content h2 { text-shadow: 0 0 26px rgba(126, 168, 255, 0.55); }
+.gate-right:hover .gate-content h2,
+.gate-right:focus-within .gate-content h2 { text-shadow: 0 0 26px rgba(255, 128, 64, 0.55); }
+.gate-left:hover .enter,
+.gate-left:focus-within .enter { text-shadow: 0 0 14px rgba(126, 168, 255, 0.6); }
+.gate-right:hover .enter,
+.gate-right:focus-within .enter { text-shadow: 0 0 14px rgba(255, 128, 64, 0.6); }
 .gate-right { border-right: none; }
 .gate.away .gate-left { transform: translateX(-102%); }
 .gate.away .gate-right { transform: translateX(102%); }
@@ -190,6 +251,14 @@ em { font-style: italic; }
 .gate-left canvas { opacity: 0.9; }
 .gate-content {
   position: absolute; left: clamp(1.4rem, 4vw, 3rem); bottom: clamp(1.6rem, 5vh, 3rem); z-index: 2;
+}
+/* the right panel runs hot — a panel-wide scrim keeps the caption legible.
+   ::before specifically — ::after is already the amber hover ring on .gate-half. */
+.gate-right::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(78% 58% at 6% 96%, rgba(5, 4, 12, 0.9) 0%, rgba(5, 4, 12, 0.62) 45%, rgba(5, 4, 12, 0) 76%),
+    linear-gradient(to top, rgba(5, 4, 12, 0.72) 0%, rgba(5, 4, 12, 0.22) 26%, rgba(5, 4, 12, 0) 48%);
 }
 .gate-content h2 { font-size: clamp(2.2rem, 4.5vw, 3.4rem); line-height: 1; }
 .gate-content p { color: #82828e; font-size: 0.86rem; margin: 0.5rem 0 1.1rem; }
@@ -378,9 +447,17 @@ html.light .hero::before {
 .portrait .portrait-og { display: none; }
 html.light .portrait .portrait-og { display: block; }
 html.light .portrait .portrait-pixel { display: none; }
+
+/* Portrait column. Centred rather than flush-right once the hero stacks. */
+.hero-right { display: flex; justify-content: center; }
+
+/* Small screens: the hero grid drops to one column. The portrait used to be
+   `display: none` here — that is why it never appeared on a phone at all.
+   Now it stacks under the copy, scaled to the viewport instead of the fixed
+   340px desktop box, so it never forces a horizontal scrollbar. */
 @media (max-width: 860px) {
-  .hero { grid-template-columns: 1fr; }
-  .hero-right { display: none; }
+  .hero { grid-template-columns: 1fr; gap: 2.4rem; }
+  .hero-right .dither-box { width: min(320px, 84vw); }
 }
 
 /* ── page shell ──────────────────────────────────────────── */
@@ -523,6 +600,87 @@ html.light .chips img { filter: none; }
 .mx-row .chips img { width: 15px; height: 15px; }
 html.light .mx-row .chips span { background: rgba(0, 0, 0, 0.02); }
 html.light .mx-row .chips span:hover { background: rgba(0, 0, 0, 0.04); }
+
+/* ── mobile polish ───────────────────────────────────────────
+   Collected in one block so the small-screen rules stay readable
+   instead of being scattered across a dozen separate queries.
+   Everything here is layout/legibility only — no visual redesign. */
+
+/* The two fixed corner controls (music pill bottom-left, theme toggle
+   bottom-right) sit on top of the content at narrow widths. Shrink the
+   label and lift the pair above the iOS home indicator. */
+@media (max-width: 640px) {
+  .bg-music, .theme-toggle {
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+  .theme-toggle { right: 14px; padding: 0.45rem 0.7rem; gap: 0.45rem; }
+  /* the footer already reserves room, but the pill can still cover the
+     last line of the status row on short screens */
+  .foot { padding-bottom: 5rem; }
+}
+
+/* Contact rows: the key and the value sat on one baseline with
+   space-between, which squeezed a long address like
+   vyasaawhan@gmail.com against the label on a 320–390px screen.
+   Stack them instead. */
+@media (max-width: 560px) {
+  .ch {
+    flex-direction: column; align-items: flex-start;
+    gap: 0.3rem; padding: 0.7rem 0.9rem;
+  }
+  .ch a, .ch-v { font-size: 0.8rem; word-break: break-word; }
+}
+
+/* LinkedIn one-liners: same problem — a fixed-width date column plus a
+   long title left too little room for the title. Stack the date above. */
+@media (max-width: 560px) {
+  .siglist li {
+    flex-direction: column; gap: 0.25rem;
+    padding: 0.6rem 0.4rem;
+  }
+  .s-date { min-width: 0; }
+}
+
+/* The hero copy starts under a fixed "← the gate" pill. On short phones
+   the clamp() minimum (4rem) leaves the eyebrow tucked too close to it. */
+@media (max-width: 640px) {
+  .hero { padding-top: 4.6rem; }
+  .hero-name { font-size: clamp(2.4rem, 12vw, 3.4rem); }
+  .hero-lede { font-size: 0.95rem; }
+}
+
+/* Experience timeline: the left rail + dot eats width and the date on
+   the same line forces a wrap. Let the date drop to its own line. */
+@media (max-width: 560px) {
+  .xp { padding-left: 1.2rem; margin-bottom: 1.3rem; }
+  .xp-head { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+  .xp-sum, .xp-list li { font-size: 0.87rem; }
+}
+
+/* Story chapters: 4rem block padding plus a 100vh min-height made each
+   chapter mostly empty space on a phone. Trim both. */
+@media (max-width: 640px) {
+  .chapter { min-height: auto; padding: 3rem 1.3rem; }
+  .ch-big.pixel-face { font-size: clamp(2.1rem, 11vw, 3rem); }
+  .ch-big { font-size: clamp(1.7rem, 8.5vw, 2.4rem); }
+  .ch-p { font-size: 0.92rem; }
+}
+
+/* Narrow screens: the desktop card stacks every chip as a full-width row,
+   which in a single mobile column turns each card into a tall sparse list
+   with large dead gaps. Drop to two columns and let the chips wrap inline
+   instead, so the block stays compact and scannable. */
+@media (max-width: 640px) {
+  .matrix {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    align-items: stretch;   /* paired cards share a baseline, not ragged bottoms */
+  }
+  .mx-row { padding: 0.8rem 0.85rem; gap: 0.5rem; }
+  .mx-row .chips { flex-direction: row; flex-wrap: wrap; gap: 0.35rem; align-content: flex-start; }
+  .mx-row .chips span { width: auto; padding: 0.3rem 0.5rem; gap: 0.4rem; }
+  .mx-row .chips img { width: 13px; height: 13px; }
+}
 
 /* ── work rows ───────────────────────────────────────────── */
 .rows { list-style: none; border-top: 1px solid var(--line); }
@@ -735,6 +893,12 @@ html.light .mx-row .chips span:hover { background: rgba(0, 0, 0, 0.04); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .gate-half, .tv, .chapter, .theme-toggle, .boot { transition: none; }
+  /* gate hover glow: keep the tint/filter (static colour, no motion) but
+     drop the specular sweep and the push-in — both are large-area motion. */
+  .gate-half::after, .gate-half canvas { transition: none; }
+  .gate-half::after { background-position: 50% 0; }
+  .gate-half:hover::after, .gate-half:focus-within::after { background-position: 50% 0; }
+  .gate-half:hover canvas, .gate-half:focus-within canvas { transform: none; }
   .boot::after { animation: none; display: none; }
   .boot-name span, .boot-role { transition: none; opacity: 1; transform: none; }
   .row.open .row-detail { animation: none; }
