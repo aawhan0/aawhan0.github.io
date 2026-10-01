@@ -8,21 +8,24 @@
   <style>
     body {
       margin: 0; min-height: 100vh; display: grid; place-content: center;
-      background: #07070c; color: #f1f1ee;
+      background: #f7f5ef; color: #211f19;
       font-family: "JetBrains Mono", ui-monospace, monospace;
       text-align: center;
     }
-    .code { font-size: clamp(4rem, 18vw, 9rem); font-weight: 700; letter-spacing: -0.04em;
-      background: linear-gradient(92deg, #c6f24e 30%, #8b7bff); -webkit-background-clip: text;
-      background-clip: text; -webkit-text-fill-color: transparent; }
-    p { color: #9a9aa8; margin: 0.5rem 0 2rem; }
-    a { color: #0a0a0f; background: #c6f24e; padding: 0.7rem 1.4rem; border-radius: 999px;
-      font-weight: 700; text-decoration: none; }
+    .code {
+      font-size: clamp(4rem, 18vw, 9rem); font-weight: 700; letter-spacing: -0.04em;
+    }
+    .code span {
+      background: linear-gradient(transparent 42%, #dff087 42%, #dff087 94%, transparent 94%);
+    }
+    p { color: #77746a; margin: 0.5rem 0 2rem; font-size: 0.85rem; }
+    a { color: #f7f5ef; background: #211f19; padding: 0.7rem 1.4rem; border-radius: 999px;
+      font-weight: 700; text-decoration: none; font-size: 0.85rem; }
   </style>
 </head>
 <body>
-  <div class="code">404</div>
-  <p>$ page not found — this what-if? didn't compile.</p>
+  <div class="code">4<span>0</span>4</div>
+  <p>$ page not found — i refuse to cite what doesn't exist.</p>
   <a href="/">← back home</a>
 </body>
 </html>
