@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aawhan Vyas — AI/ML Engineer · The Brief</title>
-  <meta name="description" content="Aawhan Vyas builds ML platforms and LLM systems that show their receipts — ModelDock, Dasaiko, TraceBack. Open to full-time opportunities.">
+  <meta name="description" content="Aawhan Vyas builds ML platforms and LLM systems that show their receipts — ModelDock, Dasaiko, TraceBack. Releases music as aawhan. Open to full-time opportunities.">
   <meta property="og:title" content="Aawhan Vyas — turning “what if?” into working software.">
-  <meta property="og:description" content="ML platforms, grounded RAG, LLM evaluation. Every claim links to its proof.">
+  <meta property="og:description" content="ML platforms, grounded RAG, LLM evaluation. Music as aawhan. Every claim links to its proof.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://aawhan0.me/">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="locked">
@@ -55,10 +55,12 @@
     <a href="#about" title="about">
       <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Zm.93-9.4-2.3.3-.04.03.9-.86a.7.7 0 0 0-.02-1 2.24 2.24 0 0 0-3.16.02L2.13 6.4a.7.7 0 0 0 .02 1 2.24 2.24 0 0 0 3.16-.02l.86-.9-2.3.3a.7.7 0 0 0-.1 1.39l3.32-.44a.7.7 0 0 0 .4-1.19L6.4 4.72a.84.84 0 0 1 1.19-.01l1.34 1.36Zm5.4 2.4a.7.7 0 0 0-1.4 0v.94l-.94-.94a.7.7 0 1 0-1 1l.94.94h-.93a.7.7 0 0 0 0 1.4h.94l-.94.94a.7.7 0 1 0 1 1l.93-.94v.94a.7.7 0 0 0 1.4 0v-.93l.94.93a.7.7 0 0 0 1-1l-.94-.94h.94a.7.7 0 0 0 0-1.4h-.93l.93-.94a.7.7 0 0 0 0-1l-.94.94V9Z"/></svg>
     </a>
-    <button id="rail-chat" title="ask my resume" aria-label="ask my resume">
-      <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M2 2a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1v2.2a.6.6 0 0 0 1 .44L6.7 12H14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2Zm2 4h8a.6.6 0 1 1 0 1.2H4A.6.6 0 1 1 4 6Zm0 3h5a.6.6 0 1 1 0 1.2H4A.6.6 0 1 1 4 9Z"/></svg>
-    </button>
   </aside>
+
+  <!-- ── theme toggle ──────────────────────────────────────── -->
+  <button class="theme-toggle mono" id="theme-toggle" aria-label="toggle theme">
+    <span class="tt-sw" aria-hidden="true"></span><span id="tt-label">dark mode</span>
+  </button>
 
   <!-- ── hero ──────────────────────────────────────────────── -->
   <header class="hero" id="top">
@@ -71,7 +73,7 @@
       where they're boring to operate. I measure everything I ship.</p>
       <div class="hero-cta">
         <a class="btn-line mono" href="#work">view projects <span aria-hidden="true">→</span></a>
-        <a class="cta-link mono" href="https://github.com/aawhan0/Resume" target="_blank" rel="noopener">résumé ↗</a>
+        <a class="cta-link mono" href="https://drive.google.com/file/d/1RFviza1nAGWFCfBeKkHZeOYMF5l4gDiH/view?usp=sharing" target="_blank" rel="noopener">résumé ↗</a>
         <a class="cta-link mono" href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">linkedin ↗</a>
         <a class="cta-link mono" href="https://github.com/aawhan0" target="_blank" rel="noopener">github ↗</a>
       </div>
@@ -83,7 +85,7 @@
 
   <main class="wrap">
     <!-- pillars -->
-    <div class="pillars">
+    <div class="pillars reveal">
       <a class="pillar" href="#work">
         <p class="p-k mono">platforms</p>
         <p class="p-t">ML infrastructure that runs itself</p>
@@ -102,7 +104,7 @@
     </div>
 
     <!-- about -->
-    <section id="about">
+    <section id="about" class="reveal">
       <p class="sec-label mono">about</p>
       <div class="about-grid">
         <div>
@@ -112,21 +114,35 @@
           That question turned into TraceBack. It turned Dasaiko from a chatbot into a
           retrieval system with a benchmark suite. It made ModelDock refuse to promote a
           model that didn't earn it.</p>
-          <p>I read the papers, then write them up on LinkedIn so they stick. When I'm not
-          doing that: music production, and an unreasonable number of browser tabs.</p>
+          <p>I read the papers, then write them up on LinkedIn so they stick.</p>
+          <p>Off the clock it's two disciplines that keep each other honest. <b>Boxing</b> —
+          the sweet science, where you learn in real time what happens when you overcommit
+          on vibes. And <b>music</b> — I produce and release as <em>aawhan</em>, lo-fi
+          confessionals for the late hours; the Joji-to-Yung-Lean school of feelings.
+          Dilruba, ionknow//idk, Aloof — out on Spotify and everywhere else.</p>
         </div>
         <aside class="highlights">
           <p class="hl-k mono">highlights</p>
           <div class="hl"><p class="hl-k mono">most-starred</p><p class="hl-v">ModelDock · ★9, open source, MIT</p></div>
           <div class="hl"><p class="hl-k mono">education</p><p class="hl-v">B.Tech CSE, VIT Bhopal · 7.66 CGPA · '26</p></div>
           <div class="hl"><p class="hl-k mono">open source</p><p class="hl-v">Provena #153 · HelloblueGK #170 — verified</p></div>
-          <div class="hl"><p class="hl-k mono">certifications</p><p class="hl-v">NPTEL Cloud · Google Networking · IBM watsonx GenAI</p></div>
+          <div class="hl"><p class="hl-k mono">music</p><p class="hl-v">releases as <a class="hl-a" href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">aawhan ↗</a> — dilruba · ionknow//idk · aloof</p></div>
+          <div class="hl"><p class="hl-k mono">ring record</p><p class="hl-v">boxing — amateur, still undefeated against the heavy bag</p></div>
         </aside>
+      </div>
+      <div class="releases reveal">
+        <p class="hl-k mono">releases — as aawhan · on spotify &amp; everywhere</p>
+        <ul class="rel-list mono">
+          <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">dilruba <span>single · the one they keep on loop ↗</span></a></li>
+          <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">ionknow//idk <span>the alias, the feeling ↗</span></a></li>
+          <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">aloof <span>with pingaksh ↗</span></a></li>
+          <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">full discography <span>artist profile ↗</span></a></li>
+        </ul>
       </div>
     </section>
 
     <!-- experience -->
-    <section id="experience">
+    <section id="experience" class="reveal">
       <p class="sec-label mono">experience</p>
       <article class="xp">
         <div class="xp-head">
@@ -151,7 +167,7 @@
     </section>
 
     <!-- work -->
-    <section id="work">
+    <section id="work" class="reveal">
       <p class="sec-label mono">selected work <span>// click a row for receipts</span></p>
       <ol class="rows">
 
@@ -288,7 +304,7 @@
     </section>
 
     <!-- skills matrix -->
-    <section id="skills">
+    <section id="skills" class="reveal">
       <p class="sec-label mono">stack</p>
       <div class="matrix">
         <div class="mx-row"><p class="mx-k mono">languages</p>
@@ -305,23 +321,25 @@
     </section>
 
     <!-- linkedin -->
-    <section id="linkedin">
+    <section id="linkedin" class="reveal">
       <p class="sec-label mono">on linkedin <span>// things i'm hyped about</span></p>
       <ul class="siglist" id="siglist"></ul>
       <p class="more mono"><a href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">follow the signal ↗</a></p>
     </section>
 
     <!-- contact -->
-    <section id="contact">
+    <section id="contact" class="reveal">
       <canvas id="dot-contact" aria-hidden="true"></canvas>
       <h3 class="sr-only">Let's build something with receipts.</h3>
       <p class="lede" style="margin:1.1rem 0 0;">AI/ML engineer focused on grounded systems and rigorous
-      evaluation. Always open to ambitious problems and a good technical conversation.</p>
+      evaluation. Always open to ambitious problems, a good technical conversation,
+      or a beat to collab on.</p>
       <div class="channels">
         <div class="ch"><span class="ch-k mono">email</span><a href="mailto:vyasaawhan@gmail.com">vyasaawhan@gmail.com <span aria-hidden="true">→</span></a></div>
         <div class="ch"><span class="ch-k mono">github</span><a href="https://github.com/aawhan0" target="_blank" rel="noopener">github.com/aawhan0 <span aria-hidden="true">↗</span></a></div>
         <div class="ch"><span class="ch-k mono">linkedin</span><a href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">in/aawhanvyas <span aria-hidden="true">↗</span></a></div>
-        <div class="ch"><span class="ch-k mono">resume</span><a href="https://github.com/aawhan0/Resume" target="_blank" rel="noopener">download pdf <span aria-hidden="true">↗</span></a></div>
+        <div class="ch"><span class="ch-k mono">music</span><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">aawhan on spotify <span aria-hidden="true">↗</span></a></div>
+        <div class="ch"><span class="ch-k mono">resume</span><a href="https://drive.google.com/file/d/1RFviza1nAGWFCfBeKkHZeOYMF5l4gDiH/view?usp=sharing" target="_blank" rel="noopener">download pdf <span aria-hidden="true">↗</span></a></div>
         <div class="ch"><span class="ch-k mono">based in</span><span class="ch-v">bhopal, india · IST (utc+5:30)</span></div>
       </div>
     </section>
@@ -331,20 +349,6 @@
     <span>© <span id="year">2026</span> aawhan vyas · <span class="status"><i aria-hidden="true"></i>open to full-time</span></span>
     <span><a href="story.html">the evidence tour ↗</a> · <a href="https://github.com/aawhan0/aawhan0.github.io" target="_blank" rel="noopener">source ↗</a></span>
   </footer>
-
-  <!-- ── floating grounded chat ────────────────────────────── -->
-  <button class="fab mono" id="fab" aria-label="ask my resume" aria-expanded="false">ask</button>
-  <div class="panel" id="panel" role="dialog" aria-label="Ask my resume">
-    <div class="panel-head mono">
-      <span><b>ask my resume</b> <em>// grounded · local · no llm</em></span>
-      <button class="panel-x mono" id="panel-x" aria-label="close">✕</button>
-    </div>
-    <div class="panel-log" id="panel-log"></div>
-    <div class="panel-input">
-      <input id="chat-input" type="text" placeholder="ask about my stack, projects, benchmarks…" aria-label="ask my resume a question">
-      <button id="chat-send" class="mono" type="button">send</button>
-    </div>
-  </div>
 
   <script src="assets/js/data.js" defer></script>
   <script src="assets/js/main.js" defer></script>

@@ -1,10 +1,21 @@
-/* aawhan0.me — landing gate (ascii wave + evidence disk), dot headline,
-   evidence rows, linkedin one-liners, grounded chat */
+/* aawhan0.me — gate scenes, dither portrait, theme toggle, rows, signals */
 
 (() => {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   document.getElementById("year").textContent = new Date().getFullYear();
+
+  /* ── theme toggle (dark default, like a certain broadcast) ── */
+  const root = document.documentElement;
+  const ttLabel = document.getElementById("tt-label");
+  const applyTheme = (light) => {
+    root.classList.toggle("light", light);
+    if (ttLabel) ttLabel.textContent = light ? "light mode" : "dark mode";
+    try { localStorage.setItem("theme", light ? "light" : "dark"); } catch (e) {}
+  };
+  try { applyTheme(localStorage.getItem("theme") === "light"); } catch (e) {}
+  document.getElementById("theme-toggle")?.addEventListener("click", () =>
+    applyTheme(!root.classList.contains("light")));
 
   /* ── landing gate scenes ─────────────────────────────────── */
   const gate = document.getElementById("gate");
@@ -31,7 +42,7 @@
 
   const stopScenes = () => { sceneRafs.forEach((id) => cancelAnimationFrame(id)); };
 
-  // left: ascii interference wave
+  // left: ascii ridge wave
   const CHARS = " .·:;=+*#%@";
   makeScene(document.getElementById("ascii-wave"), (ctx, W, H, t) => {
     ctx.fillStyle = "#0b0b0e";
@@ -40,7 +51,6 @@
     const step = 9 * dpr, rowH = 13 * dpr;
     for (let y = rowH; y < H; y += rowH) {
       for (let x = step; x < W; x += step) {
-        // one coherent ridge wandering across the panel
         const ridge = H * 0.5 + Math.sin(x * 0.004 / dpr + t * 0.9) * H * 0.22
           + Math.sin(x * 0.011 / dpr - t * 0.5) * H * 0.08;
         const d = Math.abs(y - ridge);
@@ -86,12 +96,11 @@
         p.a += p.w * 0.016;
         const x = cx + Math.cos(p.a) * p.r;
         const y = cy + Math.sin(p.a) * p.r * sq;
-        const k = (p.r - inner) / (R - inner); // 0 inner → 1 outer
+        const k = (p.r - inner) / (R - inner);
         const warm = 1 - k;
-        ctx.fillStyle = `rgba(${255},${Math.floor(178 + warm * 66)},${Math.floor(107 + warm * 123)},${0.12 + (1 - k) * 0.75})`;
+        ctx.fillStyle = `rgba(255,${Math.floor(178 + warm * 66)},${Math.floor(107 + warm * 123)},${0.12 + (1 - k) * 0.75})`;
         ctx.fillRect(x, y, 1.6 * dpr, 1.6 * dpr);
       }
-      // event horizon
       ctx.globalCompositeOperation = "source-over";
       ctx.beginPath();
       ctx.arc(cx, cy, inner * 0.62, 0, Math.PI * 2);
@@ -124,6 +133,107 @@
         b.addEventListener("click", () => enterGate(b.dataset.goto)));
     }
   }
+
+  /* ── dithered portrait — color-aware for the yellow mugshot ── */
+  const dither = document.getElementById("dither");
+  if (dither) {
+    const render = (img) => {
+      try {
+        const SW = 100, SH = 120;
+        const off = document.createElement("canvas");
+        off.width = SW; off.height = SH;
+        const o = off.getContext("2d");
+        o.drawImage(img, 0, 0, SW, SH);
+        const data = o.getImageData(0, 0, SW, SH).data;
+        const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+        const cell = 4;
+        dither.width = SW * cell; dither.height = SH * cell;
+        dither.style.width = "100%";
+        const c = dither.getContext("2d");
+        c.fillStyle = "#050507";
+        c.fillRect(0, 0, dither.width, dither.height);
+        for (let y = 0; y < SH; y++) {
+          for (let x = 0; x < SW; x++) {
+            const i = (y * SW + x) * 4;
+            const r = data[i], g = data[i + 1], b = data[i + 2];
+            const lum = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+            const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+            const sat = mx === 0 ? 0 : (mx - mn) / mx;
+            const isYellow = sat > 0.55 && r > 170 && g > 140 && b < 140;
+            if (isYellow) {
+              // keep the signature backdrop as amber dots
+              if (lum > 0.5) {
+                c.fillStyle = "rgba(255,178,107,0.92)";
+                c.fillRect(x * cell, y * cell, cell - 0.7, cell - 0.7);
+              }
+            } else if (lum > (BAYER[y % 4][x % 4] + 0.5) / 16) {
+              c.fillStyle = lum > 0.72 ? "rgba(233,233,238,0.95)" : "rgba(255,178,107,0.85)";
+              c.fillRect(x * cell, y * cell, cell - 0.7, cell - 0.7);
+            }
+          }
+        }
+      } catch (e) { /* leave fallback frame */ }
+    };
+    const img = new Image();
+    img.onload = () => render(img);
+    img.src = "assets/img/portrait.jpg";
+  }
+
+  /* ── scroll reveals ──────────────────────────────────────── */
+  if (!reduced && "IntersectionObserver" in window) {
+    const rio = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) { e.target.classList.add("in"); rio.unobserve(e.target); }
+      }
+    }, { threshold: 0.08 });
+    document.querySelectorAll(".reveal").forEach((el) => rio.observe(el));
+  } else {
+    document.querySelectorAll(".reveal").forEach((el) => el.classList.add("in"));
+  }
+
+  /* ── work rows: index numbers + click to expand receipts ── */
+  document.querySelectorAll(".rows .row").forEach((row, i) => {
+    const head = row.querySelector(".row-head");
+    const idx = document.createElement("span");
+    idx.className = "r-idx";
+    idx.textContent = String(i + 1).padStart(2, "0");
+    head.prepend(idx);
+    head.addEventListener("click", (e) => {
+      if (e.target.closest("a")) return;
+      row.classList.toggle("open");
+    });
+  });
+
+  /* ── linkedin one-liners (dates decoded from post ids) ───── */
+  const sigDateLabel = (id) => {
+    const d = new Date(Number((BigInt(id) >> 22n).toString()));
+    return d.toLocaleDateString("en-US", { month: "short" }).toLowerCase() +
+      " " + String(d.getFullYear()).slice(2);
+  };
+  const list = document.getElementById("siglist");
+  if (list) {
+    list.innerHTML = SIGNALS.map((s) => `
+      <li>
+        <span class="s-date">${sigDateLabel(s.id)}</span>
+        <a href="https://www.linkedin.com/feed/update/urn:li:activity:${s.id}"
+           target="_blank" rel="noopener">${s.title}</a>
+      </li>`).join("");
+  }
+
+  /* ── live github stats (silent fallback) ─────────────────── */
+  fetch("https://api.github.com/users/aawhan0")
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((u) => {
+      const a = document.getElementById("stat-repos");
+      const b = document.getElementById("stat-stars");
+      if (a) a.textContent = u.public_repos;
+      if (b) {
+        return fetch("https://api.github.com/users/aawhan0/repos?per_page=100")
+          .then((r) => r.json())
+          .then((repos) => { b.textContent = repos.reduce((s, r) => s + r.stargazers_count, 0); });
+      }
+    })
+    .catch(() => {});
 
   /* ── dot-matrix headline (contact) ───────────────────────── */
   const renderDot = (canvas, segLines) => {
@@ -172,224 +282,11 @@
     }
   };
   const dotContact = document.getElementById("dot-contact");
-  renderDot(dotContact, [
-    [{ t: "LET'S ", a: 0 }, { t: "BUILD.", a: 1 }],
-  ]);
+  const dotSegs = [[{ t: "LET'S ", a: 0 }, { t: "BUILD.", a: 1 }]];
+  renderDot(dotContact, dotSegs);
   let rzT;
   window.addEventListener("resize", () => {
     clearTimeout(rzT);
-    rzT = setTimeout(() => renderDot(dotContact, [
-      [{ t: "LET'S ", a: 0 }, { t: "BUILD.", a: 1 }],
-    ]), 200);
+    rzT = setTimeout(() => renderDot(dotContact, dotSegs), 200);
   });
-
-  /* ── dithered portrait (github avatar) ───────────────────── */
-  const dither = document.getElementById("dither");
-  if (dither) {
-    const drawFallback = () => {
-      const c = dither.getContext("2d");
-      c.fillStyle = "#050507";
-      c.fillRect(0, 0, dither.width, dither.height);
-      c.fillStyle = "rgba(255,178,107,0.85)";
-      const s = 8;
-      for (let y = 20; y < dither.height - 20; y += s) {
-        for (let x = 20; x < dither.width - 20; x += s) {
-          const v = Math.sin(x * 0.4) * Math.cos(y * 0.3);
-          if (v > 0.2) c.fillRect(x, y, 4, 4);
-        }
-      }
-    };
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      try {
-        const SW = 90, SH = 110;
-        const off = document.createElement("canvas");
-        off.width = SW; off.height = SH;
-        const o = off.getContext("2d");
-        o.drawImage(img, 0, 0, SW, SH);
-        const data = o.getImageData(0, 0, SW, SH).data;
-        const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
-        const cell = Math.min(5, Math.floor(dither.width / SW)) || 4;
-        dither.width = SW * cell; dither.height = SH * cell;
-        dither.style.width = "100%";
-        const c = dither.getContext("2d");
-        c.fillStyle = "#050507";
-        c.fillRect(0, 0, dither.width, dither.height);
-        for (let y = 0; y < SH; y++) {
-          for (let x = 0; x < SW; x++) {
-            const i = (y * SW + x) * 4;
-            const lum = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114) / 255;
-            if (lum > (BAYER[y % 4][x % 4] + 0.5) / 16) {
-              c.fillStyle = lum > 0.75 ? "rgba(233,233,238,0.95)" : "rgba(255,178,107,0.9)";
-              c.fillRect(x * cell, y * cell, cell - 0.6, cell - 0.6);
-            }
-          }
-        }
-      } catch (e) { drawFallback(); }
-    };
-    img.onerror = drawFallback;
-    img.src = "https://avatars.githubusercontent.com/u/114390114?v=4";
-  }
-
-  /* ── work rows: index numbers + click to expand receipts ── */
-  document.querySelectorAll(".rows .row").forEach((row, i) => {
-    const head = row.querySelector(".row-head");
-    const idx = document.createElement("span");
-    idx.className = "r-idx";
-    idx.textContent = String(i + 1).padStart(2, "0");
-    head.prepend(idx);
-    head.addEventListener("click", (e) => {
-      if (e.target.closest("a")) return;
-      row.classList.toggle("open");
-    });
-  });
-
-  /* ── linkedin one-liners (dates decoded from post ids) ───── */
-  const sigDateLabel = (id) => {
-    const d = new Date(Number((BigInt(id) >> 22n).toString()));
-    return d.toLocaleDateString("en-US", { month: "short" }).toLowerCase() +
-      " " + String(d.getFullYear()).slice(2);
-  };
-  const list = document.getElementById("siglist");
-  if (list) {
-    list.innerHTML = SIGNALS.map((s) => `
-      <li>
-        <span class="s-date">${sigDateLabel(s.id)}</span>
-        <a href="https://www.linkedin.com/feed/update/urn:li:activity:${s.id}"
-           target="_blank" rel="noopener">${s.title}</a>
-      </li>`).join("");
-  }
-
-  /* ── live github stats (silent fallback) ─────────────────── */
-  fetch("https://api.github.com/users/aawhan0")
-    .then((r) => (r.ok ? r.json() : Promise.reject()))
-    .then((u) => {
-      const a = document.getElementById("stat-repos");
-      const b = document.getElementById("stat-stars");
-      if (a) a.textContent = u.public_repos;
-      if (b) {
-        return fetch("https://api.github.com/users/aawhan0/repos?per_page=100")
-          .then((r) => r.json())
-          .then((repos) => { b.textContent = repos.reduce((s, r) => s + r.stargazers_count, 0); });
-      }
-    })
-    .catch(() => {});
-
-  /* ── grounded chat: retrieval over the resume ────────────── */
-  const STOP = new Set("the a an of to and or in for with on is are was were be been being i my me you your it its this that these those what which who whom how why when where do does did done have has had having not no yes if then than as at by from into about over under again more most some such only own same so too very can will just should now using use used also per while".split(" "));
-
-  const tokenize = (s) =>
-    (s.toLowerCase().match(/[a-z0-9+@#.]+/g) || [])
-      .filter((t) => t.length > 1 && !STOP.has(t))
-      .map((t) => (t.length > 4 ? t.replace(/(ing|ed|es|s)$/, "") : t));
-
-  const N = RESUME_CHUNKS.length;
-  const df = new Map();
-  const chunkTokens = RESUME_CHUNKS.map((c) => {
-    const t = new Map();
-    for (const tok of tokenize(c.section + " " + c.title + " " + c.text)) {
-      t.set(tok, (t.get(tok) || 0) + 1);
-      df.set(tok, (df.get(tok) || 0) + 1);
-    }
-    return t;
-  });
-
-  const esc = (s) =>
-    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-
-  const markTerms = (text, terms) => {
-    let out = esc(text);
-    for (const term of [...terms].sort((a, b) => b.length - a.length)) {
-      const re = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\@#]/g, "\\$&") + ")", "gi");
-      out = out.replace(re, "<mark>$1</mark>");
-    }
-    return out;
-  };
-
-  const retrieve = (qRaw) => {
-    const terms = [...new Set(tokenize(qRaw))];
-    const scored = RESUME_CHUNKS.map((c, i) => {
-      let s = 0;
-      for (const t of terms) {
-        const tf = chunkTokens[i].get(t);
-        if (tf) s += Math.min(tf, 3) * Math.log(1 + N / (df.get(t) || 1));
-      }
-      return { c, s };
-    }).filter((x) => x.s > 0).sort((a, b) => b.s - a.s);
-
-    return { terms, top: scored.slice(0, scored.length > 1 && scored[1].s >= scored[0].s * 0.45 ? 2 : 1) };
-  };
-
-  /* ── panel wiring ────────────────────────────────────────── */
-  const fab = document.getElementById("fab");
-  const panel = document.getElementById("panel");
-  const log = document.getElementById("panel-log");
-  const input = document.getElementById("chat-input");
-  const send = document.getElementById("chat-send");
-  let opened = false;
-
-  const add = (html, cls) => {
-    const el = document.createElement("div");
-    el.className = cls;
-    el.innerHTML = html;
-    log.appendChild(el);
-    log.scrollTop = log.scrollHeight;
-  };
-
-  const ask = (qRaw) => {
-    const q = qRaw.trim();
-    if (!q) return;
-    add(esc(q), "msg-user");
-    const { terms, top } = retrieve(q);
-    if (!top.length) {
-      add(`<div class="a-refuse">// nothing grounded in the resume for that. i refuse to
-        answer what i can't cite — try: stack, projects, benchmarks, education.</div>`, "msg-bot");
-      return;
-    }
-    for (const { c } of top) {
-      add(`<p class="a-text">${markTerms(c.text, terms)}</p>
-           <p class="a-cite">resume p.1 · § ${esc(c.section)} — ${esc(c.title)}</p>`, "msg-bot");
-    }
-  };
-
-  const toggle = (force) => {
-    const open = force !== undefined ? force : !panel.classList.contains("open");
-    panel.classList.toggle("open", open);
-    fab.setAttribute("aria-expanded", open);
-    fab.textContent = open ? "✕" : "ask";
-    if (open && !opened) {
-      opened = true;
-      add(`hey — i'm the grounded side of this site. ask me anything about
-        aawhan's resume; answers are <b>literal cited text</b> from the pdf,
-        and i refuse to make things up. ✳`, "a-note");
-      add(`try: <b>rag projects?</b> · <b>backend stack</b> · <b>benchmarks</b> ·
-        <b>open source</b> · <b>education</b>`, "a-note");
-    }
-    if (open) input.focus();
-  };
-
-  fab.addEventListener("click", () => toggle());
-  document.getElementById("panel-x").addEventListener("click", () => toggle(false));
-  document.getElementById("rail-chat")?.addEventListener("click", () => toggle(true));
-  send.addEventListener("click", () => { ask(input.value); input.value = ""; });
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { ask(input.value); input.value = ""; }
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && panel.classList.contains("open")) toggle(false);
-  });
-
-  if (!reduced && "IntersectionObserver" in window) {
-    const io = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) {
-        io.disconnect();
-        fab.animate(
-          [{ transform: "scale(1)" }, { transform: "scale(1.14)" }, { transform: "scale(1)" }],
-          { duration: 600, iterations: 2, easing: "ease-in-out" }
-        );
-      }
-    }, { threshold: 0.3 });
-    io.observe(document.getElementById("work"));
-  }
 })();
