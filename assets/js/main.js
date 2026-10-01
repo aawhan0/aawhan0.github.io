@@ -110,10 +110,11 @@
     gate.classList.add("away");
     document.body.classList.remove("locked");
     stopScenes();
-    setTimeout(() => gate.remove(), 850);
-    if (goto === "work") {
-      setTimeout(() => document.getElementById("work")?.scrollIntoView({ behavior: "smooth" }), 420);
+    if (goto === "story") {
+      setTimeout(() => { window.location.href = "story.html"; }, 450);
+      return;
     }
+    setTimeout(() => gate.remove(), 850);
   };
   if (gate) {
     if (location.hash && location.hash !== "#") {
@@ -124,28 +125,22 @@
     }
   }
 
-  /* ── dot-matrix headline ─────────────────────────────────── */
-  const dotHead = document.getElementById("dot-head");
-  const renderDotHead = () => {
-    if (!dotHead) return;
-    const maxW = Math.min(640, dotHead.parentElement.clientWidth || 640);
-    // low-res sample: ~1px glyphs → chunky LED dots
+  /* ── dot-matrix headline (contact) ───────────────────────── */
+  const renderDot = (canvas, segLines) => {
+    if (!canvas) return;
+    const maxW = Math.min(640, canvas.parentElement.clientWidth || 640);
     const fs = 10, lineH = 14;
     const font = `700 ${fs}px system-ui, sans-serif`;
-    const lines = [
-      [{ t: "I TURN ", a: 0 }, { t: "“WHAT IF?”", a: 1 }, { t: " INTO", a: 0 }],
-      [{ t: "WORKING SOFTWARE.", a: 0 }],
-    ];
     const off = document.createElement("canvas");
     const octx = off.getContext("2d");
     octx.font = font;
-    const widths = lines.map((segs) => segs.reduce((s, x) => s + octx.measureText(x.t).width, 0));
+    const widths = segLines.map((segs) => segs.reduce((s, x) => s + octx.measureText(x.t).width, 0));
     const W = Math.ceil(Math.max(...widths)) + 2;
-    const H = Math.ceil(lineH * lines.length + 2);
+    const H = Math.ceil(lineH * segLines.length + 2);
     off.width = W; off.height = H;
     octx.font = font;
     octx.textBaseline = "top";
-    lines.forEach((segs, i) => {
+    segLines.forEach((segs, i) => {
       let x = 0;
       for (const seg of segs) {
         octx.fillStyle = seg.a ? "#ff7a1a" : "#ffffff";
@@ -156,11 +151,11 @@
     const img = octx.getImageData(0, 0, W, H).data;
     const cell = Math.min(6, maxW / W);
     const r = cell * 0.36;
-    dotHead.width = Math.round(W * cell * dpr);
-    dotHead.height = Math.round(H * cell * dpr);
-    dotHead.style.width = Math.round(W * cell) + "px";
-    dotHead.style.height = "auto";
-    const ctx = dotHead.getContext("2d");
+    canvas.width = Math.round(W * cell * dpr);
+    canvas.height = Math.round(H * cell * dpr);
+    canvas.style.width = Math.round(W * cell) + "px";
+    canvas.style.height = "auto";
+    const ctx = canvas.getContext("2d");
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, W * cell, H * cell);
     for (let y = 0; y < H; y++) {
@@ -176,9 +171,66 @@
       }
     }
   };
-  renderDotHead();
+  const dotContact = document.getElementById("dot-contact");
+  renderDot(dotContact, [
+    [{ t: "LET'S ", a: 0 }, { t: "BUILD.", a: 1 }],
+  ]);
   let rzT;
-  window.addEventListener("resize", () => { clearTimeout(rzT); rzT = setTimeout(renderDotHead, 200); });
+  window.addEventListener("resize", () => {
+    clearTimeout(rzT);
+    rzT = setTimeout(() => renderDot(dotContact, [
+      [{ t: "LET'S ", a: 0 }, { t: "BUILD.", a: 1 }],
+    ]), 200);
+  });
+
+  /* ── dithered portrait (github avatar) ───────────────────── */
+  const dither = document.getElementById("dither");
+  if (dither) {
+    const drawFallback = () => {
+      const c = dither.getContext("2d");
+      c.fillStyle = "#050507";
+      c.fillRect(0, 0, dither.width, dither.height);
+      c.fillStyle = "rgba(255,178,107,0.85)";
+      const s = 8;
+      for (let y = 20; y < dither.height - 20; y += s) {
+        for (let x = 20; x < dither.width - 20; x += s) {
+          const v = Math.sin(x * 0.4) * Math.cos(y * 0.3);
+          if (v > 0.2) c.fillRect(x, y, 4, 4);
+        }
+      }
+    };
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const SW = 90, SH = 110;
+        const off = document.createElement("canvas");
+        off.width = SW; off.height = SH;
+        const o = off.getContext("2d");
+        o.drawImage(img, 0, 0, SW, SH);
+        const data = o.getImageData(0, 0, SW, SH).data;
+        const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+        const cell = Math.min(5, Math.floor(dither.width / SW)) || 4;
+        dither.width = SW * cell; dither.height = SH * cell;
+        dither.style.width = "100%";
+        const c = dither.getContext("2d");
+        c.fillStyle = "#050507";
+        c.fillRect(0, 0, dither.width, dither.height);
+        for (let y = 0; y < SH; y++) {
+          for (let x = 0; x < SW; x++) {
+            const i = (y * SW + x) * 4;
+            const lum = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114) / 255;
+            if (lum > (BAYER[y % 4][x % 4] + 0.5) / 16) {
+              c.fillStyle = lum > 0.75 ? "rgba(233,233,238,0.95)" : "rgba(255,178,107,0.9)";
+              c.fillRect(x * cell, y * cell, cell - 0.6, cell - 0.6);
+            }
+          }
+        }
+      } catch (e) { drawFallback(); }
+    };
+    img.onerror = drawFallback;
+    img.src = "https://avatars.githubusercontent.com/u/114390114?v=4";
+  }
 
   /* ── work rows: index numbers + click to expand receipts ── */
   document.querySelectorAll(".rows .row").forEach((row, i) => {

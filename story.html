@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aawhan Vyas — The Evidence Tour</title>
+  <meta name="description" content="A broadcast tour of how Aawhan builds: every claim with its receipt.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="locked">
+
+  <!-- ── tv intro ──────────────────────────────────────────── -->
+  <div class="tv" id="tv">
+    <div class="tv-inner">
+      <p class="tv-ch mono">aw broadcast division · ch 09</p>
+      <div class="tv-sig">
+        <div class="tv-bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="tv-track"><div class="tv-fill" id="tv-fill"></div></div>
+        <div class="tv-status mono"><span id="tv-label">acquiring signal</span><span id="tv-pct">0%</span></div>
+        <p class="tv-note mono" id="tv-note">…</p>
+      </div>
+      <div class="tv-actions">
+        <button class="tv-btn mono solid" id="tv-sound">▶ continue with sound</button>
+        <button class="tv-btn mono" id="tv-mute">continue without sound</button>
+      </div>
+      <p class="tv-foot mono">best with sound · the evidence prefers it loud</p>
+    </div>
+  </div>
+
+  <!-- ── fixed scene canvas ────────────────────────────────── -->
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="crt" aria-hidden="true"></div>
+
+  <a class="back mono" href="./">← the brief</a>
+
+  <main class="tour">
+    <!-- CH 01 -->
+    <section class="chapter" data-scene="wave">
+      <p class="ch-k mono">ch 01 · the spark</p>
+      <h2 class="ch-big">every build starts with<br>a <em>what if?</em></h2>
+      <p class="ch-p">Turning them into working software is the job. Keeping them honest
+      is the craft. This channel is a tour of the receipts — five minutes, no vibes.</p>
+    </section>
+
+    <!-- CH 02 -->
+    <section class="chapter" data-scene="gap">
+      <p class="ch-k mono">ch 02 · the gap</p>
+      <h2 class="ch-big">fluent <em>≠</em> correct.</h2>
+      <div class="gap-nums">
+        <div class="gap good">
+          <p class="g-num mono">100%</p>
+          <p class="g-l mono">grounded baseline · pass rate + root-cause accuracy</p>
+        </div>
+        <div class="gap bad">
+          <p class="g-num mono">10%</p>
+          <p class="g-l mono">Qwen 2.5 3B · 90% average confidence</p>
+        </div>
+      </div>
+      <p class="ch-p">TraceBack, 30 runs per configuration × 3 scenarios. The most
+      dangerous failures sound confident. So everything I build gets measured against
+      deterministic ground truth.</p>
+    </section>
+
+    <!-- CH 03 -->
+    <section class="chapter" data-scene="disk">
+      <p class="ch-k mono">ch 03 · the pipeline</p>
+      <h2 class="ch-big">promotion is <em>earned.</em></h2>
+      <p class="ch-p mono ch-steps">register → version → <b>gate</b> → serve → watch</p>
+      <p class="ch-p">ModelDock won't promote a model that didn't pass the eval-threshold
+      gate. 72 tests in CI/CD, authenticated inference, drift monitoring. A registry that
+      says no.</p>
+    </section>
+
+    <!-- CH 04 -->
+    <section class="chapter chapter-list" data-scene="wave">
+      <p class="ch-k mono">ch 04 · the receipts</p>
+      <h2 class="ch-big">don't take my word for it.</h2>
+      <ul class="ch-rows mono">
+        <li><a href="https://github.com/aawhan0/Dasaiko" target="_blank" rel="noopener">dasaiko <span>+86% recall@5 · live at dasaiko.dev ↗</span></a></li>
+        <li><a href="https://github.com/aawhan0/TraceBack" target="_blank" rel="noopener">traceback <span>100% grounded vs 10% @ 90% conf ↗</span></a></li>
+        <li><a href="https://github.com/aawhan0/ModelDock" target="_blank" rel="noopener">modeldock <span>★9 · 72 tests · gated lifecycle ↗</span></a></li>
+        <li><a href="https://github.com/provena/provena/pull/153" target="_blank" rel="noopener">provena #153 <span>✓ 498 passed · 33 skipped ↗</span></a></li>
+        <li><a href="https://github.com/aawhan0/ClearLabel-AI" target="_blank" rel="noopener">clearlabel-ai <span>yolov8 auto-annotation · dual audit ↗</span></a></li>
+      </ul>
+      <p class="ch-p">full list on <a class="ch-link" href="./#work">the brief →</a></p>
+    </section>
+
+    <!-- CH 05 -->
+    <section class="chapter chapter-list" data-scene="wave">
+      <p class="ch-k mono">ch 05 · the signal</p>
+      <h2 class="ch-big">still curious, out loud.</h2>
+      <ul class="ch-rows mono" id="story-sigs"></ul>
+      <p class="ch-p">more on <a class="ch-link" href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">linkedin ↗</a></p>
+    </section>
+
+    <!-- END -->
+    <section class="chapter chapter-end" data-scene="disk">
+      <p class="ch-k mono">end of broadcast</p>
+      <h2 class="ch-big">got a <em>what if?</em></h2>
+      <div class="channels">
+        <div class="ch"><span class="ch-k mono">email</span><a href="mailto:vyasaawhan@gmail.com">vyasaawhan@gmail.com <span aria-hidden="true">→</span></a></div>
+        <div class="ch"><span class="ch-k mono">github</span><a href="https://github.com/aawhan0" target="_blank" rel="noopener">github.com/aawhan0 <span aria-hidden="true">↗</span></a></div>
+        <div class="ch"><span class="ch-k mono">linkedin</span><a href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">in/aawhanvyas <span aria-hidden="true">↗</span></a></div>
+        <div class="ch"><span class="ch-k mono">resume</span><a href="https://github.com/aawhan0/Resume" target="_blank" rel="noopener">download pdf <span aria-hidden="true">↗</span></a></div>
+        <div class="ch"><span class="ch-k mono">based in</span><span class="ch-v">bhopal, india · IST (utc+5:30)</span></div>
+      </div>
+      <p class="ch-p"><a class="ch-link" href="./">← back to the brief</a></p>
+    </section>
+  </main>
+
+  <script src="assets/js/data.js" defer></script>
+  <script src="assets/js/story.js" defer></script>
+</body>
+</html>

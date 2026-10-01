@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aawhan Vyas — AI/ML Engineer</title>
+  <title>Aawhan Vyas — AI/ML Engineer · The Brief</title>
   <meta name="description" content="Aawhan Vyas builds ML platforms and LLM systems that show their receipts — ModelDock, Dasaiko, TraceBack. Open to full-time opportunities.">
   <meta property="og:title" content="Aawhan Vyas — turning “what if?” into working software.">
   <meta property="og:description" content="ML platforms, grounded RAG, LLM evaluation. Every claim links to its proof.">
@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="locked">
@@ -24,15 +24,15 @@
       <div class="gate-content">
         <h2 class="pixel">The Brief</h2>
         <p>a quick scan for recruiters &amp; humans.</p>
-        <button class="enter mono" data-goto="top">enter <span aria-hidden="true">→</span></button>
+        <button class="enter mono" data-goto="brief">enter <span aria-hidden="true">→</span></button>
       </div>
     </div>
     <div class="gate-half gate-right">
       <canvas id="disk" aria-hidden="true"></canvas>
       <div class="gate-content">
         <h2 class="pixel">The Evidence</h2>
-        <p>how i build — receipts included.</p>
-        <button class="enter mono" data-goto="work">enter <span aria-hidden="true">→</span></button>
+        <p>a broadcast tour of how i build.</p>
+        <button class="enter mono" data-goto="story">enter <span aria-hidden="true">→</span></button>
       </div>
     </div>
     <div class="gate-center">
@@ -43,6 +43,9 @@
 
   <!-- ── floating side rail ────────────────────────────────── -->
   <aside class="rail" aria-label="quick navigation">
+    <a href="#top" title="top">
+      <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 3 2.7 8.3l1.06 1.06L8 5.42l4.24 3.94 1.06-1.06L8 3Zm-5 8.5h10V13H3v-1.5Z"/></svg>
+    </a>
     <a href="#work" title="work">
       <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h4A1.5 1.5 0 0 1 8 2.5v4A1.5 1.5 0 0 1 6.5 8h-4A1.5 1.5 0 0 1 1 6.5v-4Zm9 0A1.5 1.5 0 0 1 11.5 1h2A1.5 1.5 0 0 1 15 2.5v2A1.5 1.5 0 0 1 13.5 6h-2A1.5 1.5 0 0 1 10 4.5v-2Zm-9 8A1.5 1.5 0 0 1 2.5 9h2A1.5 1.5 0 0 1 6 10.5v3A1.5 1.5 0 0 1 4.5 15h-2A1.5 1.5 0 0 1 1 13.5v-3Zm9 1.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0Z" transform="scale(0.9)"/></svg>
     </a>
@@ -57,29 +60,99 @@
     </button>
   </aside>
 
-  <!-- ── page ──────────────────────────────────────────────── -->
-  <header class="top">
-    <p class="idline mono">aawhan vyas <span class="role">· ai/ml engineer</span></p>
-    <nav class="top-links mono">
-      <span class="status"><i aria-hidden="true"></i>open to full-time</span>
-      <a href="https://github.com/aawhan0" target="_blank" rel="noopener">github</a>
-      <a href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">linkedin</a>
-      <a href="mailto:vyasaawhan@gmail.com">email</a>
-    </nav>
+  <!-- ── hero ──────────────────────────────────────────────── -->
+  <header class="hero" id="top">
+    <div class="hero-left">
+      <p class="eyebrow mono">ai · mlops · grounded rag · llm evals</p>
+      <h2 class="hero-name">AAWHAN VYAS<span class="dot">.</span></h2>
+      <p class="hero-sub mono">ai/ml engineer&nbsp;&nbsp;&nbsp;bhopal, india</p>
+      <p class="hero-lede"><b>AI/ML engineer who ships with receipts.</b> Model registries,
+      grounded RAG, and the evals that keep LLM systems honest — finished to the point
+      where they're boring to operate. I measure everything I ship.</p>
+      <div class="hero-cta">
+        <a class="btn-line mono" href="#work">view projects <span aria-hidden="true">→</span></a>
+        <a class="cta-link mono" href="https://github.com/aawhan0/Resume" target="_blank" rel="noopener">résumé ↗</a>
+        <a class="cta-link mono" href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">linkedin ↗</a>
+        <a class="cta-link mono" href="https://github.com/aawhan0" target="_blank" rel="noopener">github ↗</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="dither-box"><canvas id="dither" width="180" height="220"></canvas></div>
+    </div>
   </header>
 
-  <main>
-    <section class="intro">
-      <h1 class="sr-only">I turn “what if?” into working software.</h1>
-      <canvas id="dot-head" aria-hidden="true"></canvas>
-      <p class="lede">ML platforms and LLM systems that <em>show their receipts</em> — every line
-      on this page links to the repo, benchmark or PR behind it.</p>
-      <p class="statline mono"><b id="stat-repos">61</b> public repos · <b id="stat-stars">19</b> stars ·
-      building since 2022 · bhopal, india · b.tech @ vit ’26</p>
+  <main class="wrap">
+    <!-- pillars -->
+    <div class="pillars">
+      <a class="pillar" href="#work">
+        <p class="p-k mono">platforms</p>
+        <p class="p-t">ML infrastructure that runs itself</p>
+        <p class="p-d">ModelDock — registry, gated promotion, serving, drift watch.</p>
+      </a>
+      <a class="pillar" href="#work">
+        <p class="p-k mono">grounded rag</p>
+        <p class="p-t">answers that cite their source</p>
+        <p class="p-d">Dasaiko — hybrid retrieval, page-level citations, live in prod.</p>
+      </a>
+      <a class="pillar" href="#work">
+        <p class="p-k mono">evals</p>
+        <p class="p-t">measuring what actually matters</p>
+        <p class="p-d">TraceBack — deterministic ground truth vs confident nonsense.</p>
+      </a>
+    </div>
+
+    <!-- about -->
+    <section id="about">
+      <p class="sec-label mono">about</p>
+      <div class="about-grid">
+        <div>
+          <h3 class="statement">I like the unglamorous parts of AI — and I like them <em>proven</em>.</h3>
+          <p>I'm a 4th-year CS undergrad at VIT Bhopal. Most of what I build starts the same
+          way: someone says an AI system works, and I ask <em>against what ground truth?</em>
+          That question turned into TraceBack. It turned Dasaiko from a chatbot into a
+          retrieval system with a benchmark suite. It made ModelDock refuse to promote a
+          model that didn't earn it.</p>
+          <p>I read the papers, then write them up on LinkedIn so they stick. When I'm not
+          doing that: music production, and an unreasonable number of browser tabs.</p>
+        </div>
+        <aside class="highlights">
+          <p class="hl-k mono">highlights</p>
+          <div class="hl"><p class="hl-k mono">most-starred</p><p class="hl-v">ModelDock · ★9, open source, MIT</p></div>
+          <div class="hl"><p class="hl-k mono">education</p><p class="hl-v">B.Tech CSE, VIT Bhopal · 7.66 CGPA · '26</p></div>
+          <div class="hl"><p class="hl-k mono">open source</p><p class="hl-v">Provena #153 · HelloblueGK #170 — verified</p></div>
+          <div class="hl"><p class="hl-k mono">certifications</p><p class="hl-v">NPTEL Cloud · Google Networking · IBM watsonx GenAI</p></div>
+        </aside>
+      </div>
     </section>
 
+    <!-- experience -->
+    <section id="experience">
+      <p class="sec-label mono">experience</p>
+      <article class="xp">
+        <div class="xp-head">
+          <h4>Web Developer <span class="xp-co">· GenWe Films</span></h4>
+          <p class="mono xp-when">mar 2026 — may 2026</p>
+        </div>
+        <p class="xp-sum">The company's first web presence, taken from zero to signed-off production.</p>
+        <ul class="xp-list">
+          <li>Designed and shipped <a href="https://genwefilms.com" target="_blank" rel="noopener">genwefilms.com</a> — React, TypeScript, Supabase, EmailJS, Vercel.</li>
+          <li>Owned development, deployment, stakeholder communication and final handover.</li>
+          <li>Incorporated 10+ rounds of client feedback into the signed-off release.</li>
+        </ul>
+        <div class="chips mono"><span>react</span><span>typescript</span><span>supabase</span><span>vercel</span><span>emailjs</span></div>
+      </article>
+      <article class="xp">
+        <div class="xp-head">
+          <h4>ML &amp; AI Training <span class="xp-co">· Beeskilled</span></h4>
+          <p class="mono xp-when">sep 2026 — oct 2026</p>
+        </div>
+        <p class="xp-sum">Structured ML/AI training track — offer letter on file.</p>
+      </article>
+    </section>
+
+    <!-- work -->
     <section id="work">
-      <h2 class="label mono">selected work <span>// click a row for receipts</span></h2>
+      <p class="sec-label mono">selected work <span>// click a row for receipts</span></p>
       <ol class="rows">
 
         <li class="row open">
@@ -185,28 +258,14 @@
 
         <li class="row">
           <div class="row-head">
-            <span class="r-name mono">GenWe Films</span>
-            <span class="r-desc">shipped genwefilms.com — their first web presence</span>
-            <span class="r-star mono"></span>
-            <a class="r-go mono" href="https://genwefilms.com" target="_blank" rel="noopener" aria-label="open genwefilms.com">↗</a>
-          </div>
-          <div class="row-detail">
-            <p>Web developer, mar–may 2026. React, TypeScript, Supabase, Vercel.
-            Ten-plus rounds of client feedback into the signed-off release.</p>
-            <p class="r-stack mono">react · typescript · supabase · vercel</p>
-          </div>
-        </li>
-
-        <li class="row">
-          <div class="row-head">
             <span class="r-name mono">Provena</span>
             <span class="r-desc">open source — PR #153: policy evaluation error logging</span>
             <span class="r-star mono"></span>
             <a class="r-go mono" href="https://github.com/provena/provena/pull/153" target="_blank" rel="noopener" aria-label="open Provena PR 153">↗</a>
           </div>
           <div class="row-detail">
-            <p>Fixed policy-evaluation error logging and strengthened regression
-            coverage. <b>✓ 498 passed · 33 skipped</b> — verified before merge.</p>
+            <p>Fixed policy-evaluation error logging and strengthened regression coverage.
+            <b>✓ 498 passed · 33 skipped</b> — verified before merge.</p>
             <p class="r-stack mono">python · context-governance for agentic ai</p>
           </div>
         </li>
@@ -228,23 +287,36 @@
       <p class="more mono"><a href="https://github.com/aawhan0?tab=repositories" target="_blank" rel="noopener">~50 more repos ↗</a></p>
     </section>
 
+    <!-- skills matrix -->
+    <section id="skills">
+      <p class="sec-label mono">stack</p>
+      <div class="matrix">
+        <div class="mx-row"><p class="mx-k mono">languages</p>
+          <div class="chips mono"><span>python</span><span>sql</span><span>javascript</span><span>typescript</span></div></div>
+        <div class="mx-row"><p class="mx-k mono">backend &amp; apis</p>
+          <div class="chips mono"><span>fastapi</span><span>flask</span><span>rest apis</span><span>pydantic</span><span>next.js</span><span>mcp</span></div></div>
+        <div class="mx-row"><p class="mx-k mono">data &amp; ai</p>
+          <div class="chips mono"><span>rag</span><span>pgvector</span><span>langchain</span><span>pandas</span><span>numpy</span><span>yolov8</span><span>ollama</span><span>groq</span></div></div>
+        <div class="mx-row"><p class="mx-k mono">databases</p>
+          <div class="chips mono"><span>postgresql</span><span>redis</span><span>sqlite</span></div></div>
+        <div class="mx-row"><p class="mx-k mono">cloud &amp; infra</p>
+          <div class="chips mono"><span>docker</span><span>github actions</span><span>ci/cd</span><span>vercel</span></div></div>
+      </div>
+    </section>
+
+    <!-- linkedin -->
     <section id="linkedin">
-      <h2 class="label mono">on linkedin <span>// things i'm hyped about</span></h2>
+      <p class="sec-label mono">on linkedin <span>// things i'm hyped about</span></p>
       <ul class="siglist" id="siglist"></ul>
       <p class="more mono"><a href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">follow the signal ↗</a></p>
     </section>
 
-    <section id="about">
-      <h2 class="label mono">about</h2>
-      <p class="prose">I'm a 4th-year CS undergrad at VIT Bhopal who likes the unglamorous
-      parts of AI — evals, registries, retrieval quality, tests that fail loudly. I read
-      papers and write them up on LinkedIn so they stick. Off the keyboard: music production
-      and way too many tabs. Looking for a team where <em>“evidence-backed”</em> is a feature,
-      not a bug.</p>
-    </section>
-
+    <!-- contact -->
     <section id="contact">
-      <h2 class="label mono">contact</h2>
+      <canvas id="dot-contact" aria-hidden="true"></canvas>
+      <h3 class="sr-only">Let's build something with receipts.</h3>
+      <p class="lede" style="margin:1.1rem 0 0;">AI/ML engineer focused on grounded systems and rigorous
+      evaluation. Always open to ambitious problems and a good technical conversation.</p>
       <div class="channels">
         <div class="ch"><span class="ch-k mono">email</span><a href="mailto:vyasaawhan@gmail.com">vyasaawhan@gmail.com <span aria-hidden="true">→</span></a></div>
         <div class="ch"><span class="ch-k mono">github</span><a href="https://github.com/aawhan0" target="_blank" rel="noopener">github.com/aawhan0 <span aria-hidden="true">↗</span></a></div>
@@ -256,8 +328,8 @@
   </main>
 
   <footer class="foot mono">
-    <span>© <span id="year">2026</span> aawhan vyas</span>
-    <span><a href="https://github.com/aawhan0/aawhan0.github.io" target="_blank" rel="noopener">source ↗</a></span>
+    <span>© <span id="year">2026</span> aawhan vyas · <span class="status"><i aria-hidden="true"></i>open to full-time</span></span>
+    <span><a href="story.html">the evidence tour ↗</a> · <a href="https://github.com/aawhan0/aawhan0.github.io" target="_blank" rel="noopener">source ↗</a></span>
   </footer>
 
   <!-- ── floating grounded chat ────────────────────────────── -->
