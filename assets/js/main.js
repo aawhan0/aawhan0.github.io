@@ -4,9 +4,14 @@
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.getElementById("year").textContent = new Date().getFullYear();
 
-  /* ── work rows: click to expand receipts ─────────────────── */
-  document.querySelectorAll(".row").forEach((row) => {
-    row.querySelector(".row-head").addEventListener("click", (e) => {
+  /* ── work rows: index numbers + click to expand receipts ── */
+  document.querySelectorAll(".rows .row").forEach((row, i) => {
+    const head = row.querySelector(".row-head");
+    const idx = document.createElement("span");
+    idx.className = "r-idx";
+    idx.textContent = String(i + 1).padStart(2, "0");
+    head.prepend(idx);
+    head.addEventListener("click", (e) => {
       if (e.target.closest("a")) return;
       row.classList.toggle("open");
     });
