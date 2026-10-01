@@ -2,39 +2,54 @@
 
 Personal portfolio of [Aawhan Vyas](https://github.com/aawhan0), live at **[aawhan0.me](https://aawhan0.me/)**.
 
-Dark console with a cinematic split landing: **"The Brief"** (ascii wave → the page) and
-**"The Evidence"** (particle accretion disk → the page). Interior: dot-matrix headline,
-numbered evidence rows, LinkedIn one-liners, key-value contact channels, floating
-grounded chat. Plain HTML/CSS/JS, no build step. Deployed automatically by GitHub Pages from `main`.
+Dark console with a cinematic landing gate: **"On Stage"** (ascii wave → `/brief/`) and
+**"Behind the Scenes"** (particle accretion disk → `story.html`). Plain HTML/CSS/JS, no build
+step. Deployed automatically by GitHub Pages from `main`.
 
-## Page
+## Routes
 
-1. **Top** — identity line, open-to-full-time status, github/linkedin/email
-2. **Intro** — one sentence + live GitHub stats line
-3. **Selected work** — dense rows (projects, experience, OSS PRs). Click a row to expand its receipts; ↗ opens the repo
-4. **On LinkedIn** — posts as one-liners with dates auto-decoded from post IDs
-5. **About** — a short humane paragraph
-6. **Ask (floating, bottom-right)** — grounded chat over the resume: term-weighted retrieval, answers are literal cited text, refuses what it can't cite. No LLM, no keys
+| Route | What it is |
+| --- | --- |
+| `/` | Landing gate — two halves, pick a door. Deep links like `/#work` redirect to `/brief/#work` |
+| `/brief/` | **On Stage** — hero with pixel-art portrait, pillars, about, experience, expandable evidence rows, stack matrix, LinkedIn one-liners, contact |
+| `story.html` | **Behind the Scenes** — TV intro (sound choice), scroll-driven broadcast chapters, CRT scene |
+| `music.html` | **The Music** — listening room: "trees — kurtains" on loop via a hidden SoundCloud widget. Mute-only toggle, no embeds, no outbound links |
 
 ## Structure
 
 ```
-index.html             markup
-assets/css/style.css   paper/ink design system
-assets/js/main.js      row toggles, linkedin list, grounded chat
-assets/js/data.js      ★ content data — edit this one
+index.html             landing gate (two halves)
+brief/index.html       the brief — serves at /brief/ (clean URL)
+story.html             the evidence tour
+music.html             the listening room
+assets/css/style.css   dark console design system (light theme via html.light)
+assets/js/main.js      gate scenes, theme, portrait reveal, rows, signals
+assets/js/story.js     tv intro, crt hum, broadcast scenes
+assets/js/music.js     sound check, hidden player, mute pill, eq wall
+assets/js/data.js      ★ content data (SIGNALS) — edit this one
+assets/fonts/          Geist Pixel Square (vercel, OFL — see OFL-GeistPixel.txt)
+assets/img/portrait_PIXEL.png  pixel-art portrait (dark mode)
+assets/img/portrait_OG.png    real photo (hover reveal + light mode)
 assets/favicon.svg     a0 monogram
 404.html               styled not-found page
 CNAME                  → aawhan0.me  (DO NOT DELETE)
 ```
 
-## Editing (all in `assets/js/data.js`)
+## Notes
 
-- **New LinkedIn post** → append `{ id, title, blurb, tags }` to `SIGNALS`; `id` is the
-  number in the post URL. Date renders automatically.
-- **Resume changes** → update the matching chunk in `RESUME_CHUNKS` verbatim; the chat
-  picks it up automatically.
-- **Email / LinkedIn** → constants at the bottom of the file.
+- Background music is the SoundCloud widget API in a hidden iframe (`#sc-widget`) — full
+  track, not a 30s preview. Browsers block audible autoplay until a gesture, so playback
+  starts from an explicit click ("press play" / "continue with sound" / the corner pill).
+- The contact headline ("LET'S BUILD.") is plain text in Geist Pixel — theme-aware via
+  CSS variables.
+- `assets/js/main.js` computes asset URLs from `document.body.dataset.root` so the same
+  file serves both `/` and `/brief/` (which sets `data-root="../"`).
+
+## Editing
+
+- **New LinkedIn post** → append `{ id, title }` to `SIGNALS` in `assets/js/data.js`;
+  `id` is the number in the post URL. Dates render automatically.
+- **Email / LinkedIn / resume** → links live inline in `brief/index.html`.
 
 ## Local preview
 
@@ -42,4 +57,5 @@ CNAME                  → aawhan0.me  (DO NOT DELETE)
 python -m http.server 8000
 ```
 
-Then open http://localhost:8000.
+Then open http://localhost:8000 — `/brief` redirects to `/brief/` the same way
+GitHub Pages serves it.

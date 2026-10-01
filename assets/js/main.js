@@ -1,9 +1,10 @@
-/* aawhan0.me — gate scenes, dither portrait, theme toggle, rows, signals */
+/* aawhan0.me — gate scenes, theme toggle, portrait reveal, rows, signals */
 
 (() => {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
-  document.getElementById("year").textContent = new Date().getFullYear();
+  const yearEl = document.getElementById("year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   /* ── theme toggle (dark default, like a certain broadcast) ── */
   const root = document.documentElement;
@@ -13,9 +14,11 @@
     if (ttLabel) ttLabel.textContent = light ? "light mode" : "dark mode";
     try { localStorage.setItem("theme", light ? "light" : "dark"); } catch (e) {}
   };
-  try { applyTheme(localStorage.getItem("theme") === "light"); } catch (e) {}
+  try { applyTheme(document.body.dataset.defaultTheme === "light" || localStorage.getItem("theme") === "light"); } catch (e) {}
   document.getElementById("theme-toggle")?.addEventListener("click", () =>
     applyTheme(!root.classList.contains("light")));
+
+
 
   /* ── landing gate scenes ─────────────────────────────────── */
   const gate = document.getElementById("gate");
@@ -65,119 +68,116 @@
     }
   });
 
-  // right: evidence accretion disk
+  // right: behind the scenes — interstellar black hole through a thermal camera
   makeScene(document.getElementById("disk"), (() => {
-    let stars = null, parts = null, seedW = 0, seedH = 0;
-    const seed = (W, H) => {
-      stars = Array.from({ length: 130 }, () => ({
-        x: Math.random() * W, y: Math.random() * H,
-        a: Math.random() * 0.5 + 0.1, r: Math.random() * 1.1 + 0.3,
-      }));
-      const R = Math.min(W, H) * 0.46, inner = R * 0.28;
-      parts = Array.from({ length: 520 }, () => {
-        const r = inner * 0.9 + Math.pow(Math.random(), 0.7) * (R - inner);
-        return { r, a: Math.random() * Math.PI * 2, w: 1.6 / Math.pow(r / (inner * 2), 1.4) };
-      });
-      seedW = W; seedH = H;
+    const BW = 320, BH = 380;
+    let buf = null, bufCtx = null, img = null, lut = null;
+    const buildLut = () => {
+      const stops = [
+        [0.0, 0, 0, 0], [0.16, 28, 0, 62], [0.36, 122, 14, 52],
+        [0.56, 208, 56, 14], [0.74, 255, 132, 0], [0.88, 255, 216, 76], [1.0, 255, 255, 238],
+      ];
+      lut = new Uint8ClampedArray(256 * 3);
+      for (let i = 0; i < 256; i++) {
+        const v = i / 255;
+        let a = stops[0], b = stops[stops.length - 1];
+        for (let s = 0; s < stops.length - 1; s++) {
+          if (v >= stops[s][0] && v <= stops[s + 1][0]) { a = stops[s]; b = stops[s + 1]; break; }
+        }
+        const k = (v - a[0]) / ((b[0] - a[0]) || 1);
+        lut[i * 3] = a[1] + (b[1] - a[1]) * k;
+        lut[i * 3 + 1] = a[2] + (b[2] - a[2]) * k;
+        lut[i * 3 + 2] = a[3] + (b[3] - a[3]) * k;
+      }
     };
     return (ctx, W, H, t) => {
-      if (!parts || W !== seedW || H !== seedH) seed(W, H);
-      const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.46, inner = R * 0.28;
-      ctx.globalCompositeOperation = "source-over";
-      ctx.fillStyle = "rgba(11,11,14,0.4)";
-      ctx.fillRect(0, 0, W, H);
-      for (const s of stars) {
-        ctx.fillStyle = `rgba(200,205,225,${s.a})`;
-        ctx.fillRect(s.x, s.y, s.r, s.r);
+      if (!buf) {
+        buf = document.createElement("canvas");
+        buf.width = BW; buf.height = BH;
+        bufCtx = buf.getContext("2d");
+        img = bufCtx.createImageData(BW, BH);
+        buildLut();
       }
-      ctx.globalCompositeOperation = "lighter";
-      const sq = 0.42;
-      for (const p of parts) {
-        p.a += p.w * 0.016;
-        const x = cx + Math.cos(p.a) * p.r;
-        const y = cy + Math.sin(p.a) * p.r * sq;
-        const k = (p.r - inner) / (R - inner);
-        const warm = 1 - k;
-        ctx.fillStyle = `rgba(255,${Math.floor(178 + warm * 66)},${Math.floor(107 + warm * 123)},${0.12 + (1 - k) * 0.75})`;
-        ctx.fillRect(x, y, 1.6 * dpr, 1.6 * dpr);
+      const d = img.data;
+      const cx = BW / 2, cy = BH * 0.5;
+      const Rh = BH * 0.155;   // event horizon radius
+      let seed = 987654321;
+      const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+      for (let y = 0; y < BH; y++) {
+        for (let x = 0; x < BW; x++) {
+          const i = (y * BW + x) * 4;
+          const px = (x - cx) / Rh, py = (y - cy) / Rh;
+          const r = Math.hypot(px, py);
+          let v = 0;
+          // doppler beaming: the side spinning toward us burns brighter
+          const doppler = 1 + 0.8 * -Math.sign(px) * Math.min(1, Math.abs(px) / 2.4);
+          const angle = Math.atan2(py, px);
+          const streak = 0.7 + 0.3 * Math.sin(angle * 21 + t * 2.4 + r * 4.5);
+          // front disk — crosses in front of the horizon, below the center line
+          const f = Math.hypot(px / 2.75, (py - 0.1) / 0.38);
+          if (py > 0.02 && Math.abs(f - 1) < 0.13) {
+            v = Math.max(v, (1 - Math.abs(f - 1) / 0.13) * doppler * streak);
+          } else if (py > 0.02 && f >= 1 && f < 1.35) {
+            v = Math.max(v, (1 - (f - 1) / 0.35) * 0.35 * doppler * streak);
+          }
+          if (r >= 1) {
+            // lensed far side — the fat arc arched over the top
+            const u = Math.hypot(px / 1.48, (py + 0.05) / 1.12);
+            if (py < -0.04 && Math.abs(u - 1) < 0.15) {
+              v = Math.max(v, (1 - Math.abs(u - 1) / 0.15) * (0.45 + 0.55 * doppler) * streak);
+            }
+            // lensed underside — the smaller mirrored arc below the disk
+            const lo = Math.hypot(px / 1.1, (py - 0.06) / 0.75);
+            if (py > 0.3 && Math.abs(lo - 1) < 0.12) {
+              v = Math.max(v, (1 - Math.abs(lo - 1) / 0.12) * 0.75 * doppler * streak);
+            }
+            // soft halo hugging the horizon
+            if (r < 1.7) v = Math.max(v, (1 - (r - 1) / 0.7) * 0.14 * doppler);
+            // photon ring — thin, right against the horizon
+            if (Math.abs(r - 1.045) < 0.028) v = Math.max(v, 0.95);
+          }
+          // thermal grain
+          v = Math.min(1, Math.max(0, v + (rnd() - 0.5) * 0.08));
+          const q = Math.round(v * 255);
+          d[i] = lut[q * 3]; d[i + 1] = lut[q * 3 + 1]; d[i + 2] = lut[q * 3 + 2]; d[i + 3] = 255;
+        }
       }
-      ctx.globalCompositeOperation = "source-over";
-      ctx.beginPath();
-      ctx.arc(cx, cy, inner * 0.62, 0, Math.PI * 2);
-      ctx.fillStyle = "#050507";
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(cx, cy, inner * 0.66, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(255,225,190,0.55)";
-      ctx.lineWidth = 1.4 * dpr;
-      ctx.stroke();
+      bufCtx.putImageData(img, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(buf, 0, 0, W, H);
+      // thermal camera chrome: scanlines + rolling refresh band
+      ctx.fillStyle = "rgba(0,0,0,0.16)";
+      for (let y = 0; y < H; y += 6 * dpr) ctx.fillRect(0, y, W, dpr);
+      const roll = ((t * 0.1) % 1) * H;
+      ctx.fillStyle = "rgba(255,255,255,0.045)";
+      ctx.fillRect(0, roll, W, 16 * dpr);
+      ctx.strokeStyle = "rgba(255,255,255,0.1)";
+      ctx.lineWidth = dpr;
+      ctx.strokeRect(0.5, 0.5, W - 1, H - 1);
     };
   })());
-
   const enterGate = (goto) => {
     if (!gate || gate.classList.contains("away")) return;
     gate.classList.add("away");
     document.body.classList.remove("locked");
     stopScenes();
-    if (goto === "story") {
-      setTimeout(() => { window.location.href = "story.html"; }, 450);
+    const routes = { brief: "brief/", story: "story.html" };
+    if (routes[goto]) {
+      setTimeout(() => { window.location.href = routes[goto]; }, 450);
       return;
     }
     setTimeout(() => gate.remove(), 850);
   };
   if (gate) {
     if (location.hash && location.hash !== "#") {
-      gate.remove(); document.body.classList.remove("locked");
+      // deep links live on the brief route now — carry the anchor over
+      window.location.replace("brief/" + location.hash);
     } else {
       document.querySelectorAll(".enter").forEach((b) =>
         b.addEventListener("click", () => enterGate(b.dataset.goto)));
     }
   }
 
-  /* ── dithered portrait — color-aware for the yellow mugshot ── */
-  const dither = document.getElementById("dither");
-  if (dither) {
-    const render = (img) => {
-      try {
-        const SW = 100, SH = 120;
-        const off = document.createElement("canvas");
-        off.width = SW; off.height = SH;
-        const o = off.getContext("2d");
-        o.drawImage(img, 0, 0, SW, SH);
-        const data = o.getImageData(0, 0, SW, SH).data;
-        const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
-        const cell = 4;
-        dither.width = SW * cell; dither.height = SH * cell;
-        dither.style.width = "100%";
-        const c = dither.getContext("2d");
-        c.fillStyle = "#050507";
-        c.fillRect(0, 0, dither.width, dither.height);
-        for (let y = 0; y < SH; y++) {
-          for (let x = 0; x < SW; x++) {
-            const i = (y * SW + x) * 4;
-            const r = data[i], g = data[i + 1], b = data[i + 2];
-            const lum = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
-            const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
-            const sat = mx === 0 ? 0 : (mx - mn) / mx;
-            const isYellow = sat > 0.55 && r > 170 && g > 140 && b < 140;
-            if (isYellow) {
-              // keep the signature backdrop as amber dots
-              if (lum > 0.5) {
-                c.fillStyle = "rgba(255,178,107,0.92)";
-                c.fillRect(x * cell, y * cell, cell - 0.7, cell - 0.7);
-              }
-            } else if (lum > (BAYER[y % 4][x % 4] + 0.5) / 16) {
-              c.fillStyle = lum > 0.72 ? "rgba(233,233,238,0.95)" : "rgba(255,178,107,0.85)";
-              c.fillRect(x * cell, y * cell, cell - 0.7, cell - 0.7);
-            }
-          }
-        }
-      } catch (e) { /* leave fallback frame */ }
-    };
-    const img = new Image();
-    img.onload = () => render(img);
-    img.src = "assets/img/portrait.jpg";
-  }
 
   /* ── scroll reveals ──────────────────────────────────────── */
   if (!reduced && "IntersectionObserver" in window) {
@@ -235,58 +235,4 @@
     })
     .catch(() => {});
 
-  /* ── dot-matrix headline (contact) ───────────────────────── */
-  const renderDot = (canvas, segLines) => {
-    if (!canvas) return;
-    const maxW = Math.min(640, canvas.parentElement.clientWidth || 640);
-    const fs = 10, lineH = 14;
-    const font = `700 ${fs}px system-ui, sans-serif`;
-    const off = document.createElement("canvas");
-    const octx = off.getContext("2d");
-    octx.font = font;
-    const widths = segLines.map((segs) => segs.reduce((s, x) => s + octx.measureText(x.t).width, 0));
-    const W = Math.ceil(Math.max(...widths)) + 2;
-    const H = Math.ceil(lineH * segLines.length + 2);
-    off.width = W; off.height = H;
-    octx.font = font;
-    octx.textBaseline = "top";
-    segLines.forEach((segs, i) => {
-      let x = 0;
-      for (const seg of segs) {
-        octx.fillStyle = seg.a ? "#ff7a1a" : "#ffffff";
-        octx.fillText(seg.t, x, i * lineH + 1);
-        x += octx.measureText(seg.t).width;
-      }
-    });
-    const img = octx.getImageData(0, 0, W, H).data;
-    const cell = Math.min(6, maxW / W);
-    const r = cell * 0.36;
-    canvas.width = Math.round(W * cell * dpr);
-    canvas.height = Math.round(H * cell * dpr);
-    canvas.style.width = Math.round(W * cell) + "px";
-    canvas.style.height = "auto";
-    const ctx = canvas.getContext("2d");
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, W * cell, H * cell);
-    for (let y = 0; y < H; y++) {
-      for (let x = 0; x < W; x++) {
-        const i = (y * W + x) * 4;
-        if (img[i + 3] > 110) {
-          const amber = img[i] > 200 && img[i + 1] < 180;
-          ctx.beginPath();
-          ctx.arc(x * cell + cell / 2, y * cell + cell / 2, r, 0, Math.PI * 2);
-          ctx.fillStyle = amber ? "rgba(255,178,107,0.95)" : "rgba(233,233,238,0.9)";
-          ctx.fill();
-        }
-      }
-    }
-  };
-  const dotContact = document.getElementById("dot-contact");
-  const dotSegs = [[{ t: "LET'S ", a: 0 }, { t: "BUILD.", a: 1 }]];
-  renderDot(dotContact, dotSegs);
-  let rzT;
-  window.addEventListener("resize", () => {
-    clearTimeout(rzT);
-    rzT = setTimeout(() => renderDot(dotContact, dotSegs), 200);
-  });
 })();

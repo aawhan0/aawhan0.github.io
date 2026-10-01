@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aawhan Vyas — The Music</title>
+  <meta name="description" content="The listening room — trees, by kurtains, on loop. Full track, no redirects, no embeds.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css$16">
+</head>
+<body class="locked">
+
+  <!-- ── sound check ───────────────────────────────────────── -->
+  <div class="tv" id="tv">
+    <div class="tv-inner">
+      <p class="tv-ch mono">aw sound division · ch 33</p>
+      <div class="tv-sig">
+        <div class="tv-bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+        <p class="tv-note mono">tonight's loop — trees · kurtains</p>
+      </div>
+      <div class="tv-actions">
+        <button class="tv-btn mono solid" id="tv-play">▶ press play</button>
+        <button class="tv-btn mono" id="tv-silent">enter in silence</button>
+      </div>
+      <p class="tv-foot mono">full track · no redirects · just the song and the room</p>
+    </div>
+  </div>
+
+  <!-- ── room scene ────────────────────────────────────────── -->
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="crt" aria-hidden="true"></div>
+
+  <a class="back mono" href="brief/">← on stage</a>
+
+  <main class="tour">
+    <section class="chapter chapter-end">
+      <p class="ch-k mono">now playing · on loop</p>
+      <h2 class="ch-big pixel-face"><span>trees</span> <em>—</em> kurtains</h2>
+      <p class="ch-p">the song this site hums while you read. w/ chanel rose n
+      zootzie — prod. kurtains + angelus. three minutes of late-hours
+      static, looped till you leave.</p>
+      <p class="ch-p mono ch-steps">corner toggle = mute · nothing here links out — the room keeps the record</p>
+    </section>
+  </main>
+
+  <!-- ── music mute · trees — kurtains (hidden player) ─────── -->
+  <div class="bg-music mono" id="bg-music">
+    <button class="bm-btn" id="bm-toggle" aria-pressed="false" aria-label="unmute background music">
+      <span class="bm-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span id="bm-label">trees — kurtains</span>
+    </button>
+  </div>
+  <iframe id="sc-widget" title="background music — trees by kurtains" allow="autoplay" tabindex="-1"
+    src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fkurtains%2Ftree&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=true&amp;show_reposts=false&amp;buying=false&amp;sharing=false&amp;visual=false"></iframe>
+
+  <script src="assets/js/music.js$16" defer></script>
+</body>
+</html>

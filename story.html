@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aawhan Vyas — The Evidence Tour</title>
-  <meta name="description" content="A broadcast tour of how Aawhan builds: every claim with its receipt.">
+  <title>Aawhan Vyas — Behind the Scenes</title>
+  <meta name="description" content="The raw footage — how Aawhan actually builds, thinks, boxes and makes music.">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css$16">
 </head>
 <body class="locked">
 
@@ -27,13 +27,6 @@
         <button class="tv-btn mono solid" id="tv-sound">▶ continue with sound</button>
         <button class="tv-btn mono" id="tv-mute">continue without sound</button>
       </div>
-      <div class="tv-spotify">
-        <p class="tv-spin mono">now spinning on this channel —</p>
-        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3sPuqxM7cusrNpY1u58o82?utm_source=oembed"
-          width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy" title="Spotify player"></iframe>
-        <p class="tv-foot mono">hit play above · the hum below is just the broadcast</p>
-      </div>
     </div>
   </div>
 
@@ -41,15 +34,18 @@
   <canvas id="scene" aria-hidden="true"></canvas>
   <div class="crt" aria-hidden="true"></div>
 
-  <a class="back mono" href="./">← the brief</a>
+  <a class="back mono" href="brief/">← on stage</a>
 
   <main class="tour">
     <!-- CH 01 -->
     <section class="chapter" data-scene="wave">
       <p class="ch-k mono">ch 01 · the spark</p>
       <h2 class="ch-big">every build starts with<br>a <em>what if?</em></h2>
-      <p class="ch-p">Turning them into working software is the job. Keeping them honest
-      is the craft. This channel is a tour of the receipts — five minutes, no vibes.</p>
+      <p class="ch-p">Mine tend to show up past midnight. A friend ranting about some
+      broken workflow, a tool that almost works, a "someone should really fix this" —
+      and I stop listening because my brain is already three files deep. I vanish for
+      a weekend and come back with a repo nobody asked for. This channel is that
+      habit, documented.</p>
     </section>
 
     <!-- CH 02 -->
@@ -66,9 +62,11 @@
           <p class="g-l mono">Qwen 2.5 3B · 90% average confidence</p>
         </div>
       </div>
-      <p class="ch-p">TraceBack, 30 runs per configuration × 3 scenarios. The most
-      dangerous failures sound confident. So everything I build gets measured against
-      deterministic ground truth.</p>
+      <p class="ch-p">The most dangerous answers are the confident ones. I learned that
+      the awkward way — watching a model nail a demo, then fall apart the second the
+      inputs got real. So now I ask the boring question: <b>against what ground truth?</b>
+      Thirty runs per configuration, three scenarios, every time. Not glamorous.
+      It's the reason I sleep.</p>
     </section>
 
     <!-- CH 03 -->
@@ -76,13 +74,14 @@
       <p class="ch-k mono">ch 03 · the pipeline</p>
       <h2 class="ch-big">promotion is <em>earned.</em></h2>
       <p class="ch-p mono ch-steps">register → version → <b>gate</b> → serve → watch</p>
-      <p class="ch-p">ModelDock won't promote a model that didn't pass the eval-threshold
-      gate. 72 tests in CI/CD, authenticated inference, drift monitoring. A registry that
-      says no.</p>
+      <p class="ch-p">I don't ship things I can't vouch for, so I built the registry that
+      feels the same way. ModelDock won't promote a model that didn't pass the
+      eval-threshold gate — 72 tests in CI/CD, authenticated inference, drift watching
+      after it ships. It has said no before. That's my favourite feature.</p>
     </section>
 
     <!-- CH 04 -->
-    <section class="chapter chapter-list" data-scene="wave">
+    <section class="chapter chapter-list" data-scene="grid">
       <p class="ch-k mono">ch 04 · the receipts</p>
       <h2 class="ch-big">don't take my word for it.</h2>
       <ul class="ch-rows mono">
@@ -92,21 +91,46 @@
         <li><a href="https://github.com/provena/provena/pull/153" target="_blank" rel="noopener">provena #153 <span>✓ 498 passed · 33 skipped ↗</span></a></li>
         <li><a href="https://github.com/aawhan0/ClearLabel-AI" target="_blank" rel="noopener">clearlabel-ai <span>yolov8 auto-annotation · dual audit ↗</span></a></li>
       </ul>
-      <p class="ch-p">full list on <a class="ch-link" href="./#work">the brief →</a></p>
+      <p class="ch-p">everything above links to something you can open, run or clone.
+      the rest of the drawer is on <a class="ch-link" href="https://github.com/aawhan0" target="_blank" rel="noopener">github ↗</a>,
+      the full tour lives on <a class="ch-link" href="brief/#work">on stage →</a></p>
     </section>
 
     <!-- CH 05 -->
-    <section class="chapter chapter-list" data-scene="wave">
+    <section class="chapter chapter-list" data-scene="signal">
       <p class="ch-k mono">ch 05 · the signal</p>
       <h2 class="ch-big">still curious, out loud.</h2>
+      <p class="ch-p">I read the papers, then write them up in public. Turns out explaining
+      things to strangers is the best flashcard system ever invented — and the fastest
+      way to find out you were wrong about something.</p>
       <ul class="ch-rows mono" id="story-sigs"></ul>
       <p class="ch-p">more on <a class="ch-link" href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">linkedin ↗</a></p>
+    </section>
+
+    <!-- CH 06 -->
+    <section class="chapter chapter-list" data-scene="eq">
+      <p class="ch-k mono">ch 06 · off the clock</p>
+      <h2 class="ch-big">boxing keeps <em>music</em> honest.</h2>
+      <p class="ch-p">Off screen it's the heavy bag and the midi keyboard. Boxing is the
+      one place where overcommitting on vibes actually gets you hit — great training for
+      shipping ML, honestly. Amateur, still undefeated against the heavy bag. Ask me
+      about my footwork some time. Or don't, we'll be here a while.</p>
+      <p class="ch-p">And <b>music</b> — I produce and release as <em>aawhan</em>, lo-fi
+      confessionals for the late hours. the Joji-to-Yung-Lean school of feelings —
+      out on Spotify and everywhere else.</p>
+      <ul class="ch-rows mono">
+        <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">dilruba <span>single · the one they keep on loop ↗</span></a></li>
+        <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">ionknow//idk <span>the alias, the feeling ↗</span></a></li>
+        <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">aloof <span>with pingaksh ↗</span></a></li>
+        <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">full discography <span>aawhan · artist profile ↗</span></a></li>
+      </ul>
     </section>
 
     <!-- END -->
     <section class="chapter chapter-end" data-scene="disk">
       <p class="ch-k mono">end of broadcast</p>
       <h2 class="ch-big">got a <em>what if?</em></h2>
+      <p class="ch-p">bring me one — i'll bring the receipts.</p>
       <div class="channels">
         <div class="ch"><span class="ch-k mono">email</span><a href="mailto:vyasaawhan@gmail.com">vyasaawhan@gmail.com <span aria-hidden="true">→</span></a></div>
         <div class="ch"><span class="ch-k mono">github</span><a href="https://github.com/aawhan0" target="_blank" rel="noopener">github.com/aawhan0 <span aria-hidden="true">↗</span></a></div>
@@ -114,11 +138,21 @@
         <div class="ch"><span class="ch-k mono">resume</span><a href="https://drive.google.com/file/d/1RFviza1nAGWFCfBeKkHZeOYMF5l4gDiH/view?usp=sharing" target="_blank" rel="noopener">download pdf <span aria-hidden="true">↗</span></a></div>
         <div class="ch"><span class="ch-k mono">based in</span><span class="ch-v">bhopal, india · IST (utc+5:30)</span></div>
       </div>
-      <p class="ch-p"><a class="ch-link" href="./">← back to the brief</a></p>
+      <p class="ch-p"><a class="ch-link" href="brief/">← back to on stage</a></p>
     </section>
   </main>
 
-  <script src="assets/js/data.js" defer></script>
-  <script src="assets/js/story.js" defer></script>
+  <!-- ── background music · trees — kurtains (hidden player) ─ -->
+  <div class="bg-music mono" id="bg-music">
+    <button class="bm-btn" id="bm-toggle" aria-pressed="false" aria-label="unmute background music">
+      <span class="bm-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span id="bm-label">trees — kurtains</span>
+    </button>
+  </div>
+  <iframe id="sc-widget" title="background music — trees by kurtains" allow="autoplay" tabindex="-1"
+    src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fkurtains%2Ftree&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=true&amp;show_reposts=false&amp;buying=false&amp;sharing=false&amp;visual=false"></iframe>
+
+  <script src="assets/js/data.js$16" defer></script>
+  <script src="assets/js/story.js$16" defer></script>
 </body>
 </html>

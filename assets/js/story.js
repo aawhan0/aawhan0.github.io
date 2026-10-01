@@ -54,6 +54,7 @@
   const enterTour = (sound) => {
     audioOn = !!sound;
     if (audioOn) startAudio();
+    if (sound) startSong();
     tv.classList.add("away");
     document.body.classList.remove("locked");
     blip(720);
@@ -61,6 +62,61 @@
   };
   document.getElementById("tv-sound").addEventListener("click", () => enterTour(true));
   document.getElementById("tv-mute").addEventListener("click", () => enterTour(false));
+
+  /* ── background song — trees · kurtains, via hidden soundcloud
+     widget. starts on "continue with sound"; the corner pill is a
+     pure mute (song + broadcast hum), no redirect, no embed. ──── */
+  const pill = document.getElementById("bg-music");
+  const pillBtn = document.getElementById("bm-toggle");
+  let widget = null;
+  let songWanted = false;
+
+  const setPill = (playing) => {
+    pill.classList.toggle("paused", !playing);
+    pillBtn.setAttribute("aria-pressed", String(playing));
+    pillBtn.setAttribute("aria-label", playing ? "mute background music" : "unmute background music");
+  };
+  setPill(false);
+
+  const startSong = () => {
+    songWanted = true;
+    try { localStorage.setItem("aw-music", "on"); } catch (e) {}
+    setPill(true);
+    if (widget) widget.play();
+  };
+
+  const api = document.createElement("script");
+  api.src = "https://w.soundcloud.com/player/api.js";
+  api.onload = () => {
+    widget = SC.Widget(document.getElementById("sc-widget"));
+    widget.bind(SC.Widget.Events.READY, () => {
+      widget.setVolume(65);
+      if (songWanted) widget.play();
+    });
+    widget.bind(SC.Widget.Events.PLAY, () => setPill(true));
+    widget.bind(SC.Widget.Events.PAUSE, () => setPill(false));
+    widget.bind(SC.Widget.Events.FINISH, () => setPill(false));
+  };
+  document.head.appendChild(api);
+
+  pillBtn.addEventListener("click", () => {
+    const playing = !pill.classList.contains("paused");
+    try { localStorage.setItem("aw-music", playing ? "off" : "on"); } catch (e) {}
+    if (playing) {
+      songWanted = false;
+      setPill(false);
+      if (widget) widget.pause();
+      audioOn = false;
+      if (audioCtx) audioCtx.suspend().catch(() => {});
+    } else {
+      songWanted = true;
+      setPill(true);
+      if (audioCtx) audioCtx.resume().catch(() => {});
+      else startAudio();
+      audioOn = true;
+      if (widget) widget.play();
+    }
+  });
 
   // signal acquisition animation
   const fill = document.getElementById("tv-fill");
@@ -164,6 +220,74 @@
     ctx.fillRect(0, scanY, W, 2 * dpr);
   };
 
+  const drawGrid = (ctx, W, H, t, alpha) => {
+    // drifting constellation — nodes link up as they pass each other
+    let s = 42;
+    const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
+    const pts = [];
+    for (let i = 0; i < 42; i++) {
+      pts.push({
+        x: rnd() * W, y: rnd() * H,
+        dx: Math.sin(t * 0.35 + i) * 14 * dpr,
+        dy: Math.cos(t * 0.28 + i * 1.7) * 10 * dpr,
+      });
+    }
+    ctx.strokeStyle = `rgba(145,158,198,${0.13 * alpha})`;
+    ctx.lineWidth = dpr;
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const ax = pts[i].x + pts[i].dx, ay = pts[i].y + pts[i].dy;
+        const bx = pts[j].x + pts[j].dx, by = pts[j].y + pts[j].dy;
+        if (Math.hypot(ax - bx, ay - by) < W * 0.14) {
+          ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+        }
+      }
+    }
+    ctx.fillStyle = `rgba(145,158,198,${0.5 * alpha})`;
+    for (const p of pts) ctx.fillRect(p.x + p.dx - 1.5 * dpr, p.y + p.dy - 1.5 * dpr, 3 * dpr, 3 * dpr);
+  };
+
+  const drawSignal = (ctx, W, H, t, alpha) => {
+    // radar sweep: expanding rings, a slow scan arm, blinking blips
+    const cx = W * 0.5, cy = H * 0.42, R = Math.min(W, H) * 0.55;
+    for (let i = 0; i < 3; i++) {
+      const k = (t * 0.22 + i / 3) % 1;
+      ctx.beginPath();
+      ctx.arc(cx, cy, k * R, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255,178,107,${(1 - k) * 0.26 * alpha})`;
+      ctx.lineWidth = 1.2 * dpr;
+      ctx.stroke();
+    }
+    const a = t * 0.9;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+    ctx.strokeStyle = `rgba(255,178,107,${0.3 * alpha})`;
+    ctx.stroke();
+    let s = 11;
+    const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
+    for (let i = 0; i < 9; i++) {
+      const bx = cx + (rnd() - 0.5) * W * 0.6, by = cy + (rnd() - 0.5) * H * 0.5;
+      const blink = 0.25 + 0.75 * Math.abs(Math.sin(t * 1.4 + i * 2.1));
+      ctx.fillStyle = `rgba(233,233,238,${blink * alpha})`;
+      ctx.fillRect(bx - 1.5 * dpr, by - 1.5 * dpr, 3 * dpr, 3 * dpr);
+    }
+  };
+
+  const drawEq = (ctx, W, H, t, alpha) => {
+    // low equalizer wall
+    const n = 30, bw = W / n;
+    for (let i = 0; i < n; i++) {
+      const lvl = Math.abs(Math.sin(i * 0.5 + t * 0.45) * 0.62 + Math.sin(i * 1.21 - t * 0.28) * 0.38);
+      const h2 = (0.06 + lvl * 0.6) * H;
+      ctx.fillStyle = `rgba(255,178,107,${(0.05 + lvl * 0.1) * alpha})`;
+      ctx.fillRect(i * bw + bw * 0.3, H - h2, bw * 0.4, h2);
+    }
+  };
+
+  const scenes = { wave: drawWave, gap: drawGap, disk: drawDisk, grid: drawGrid, signal: drawSignal, eq: drawEq };
+  const paintScene = (name, a, tt) => (scenes[name] || drawGap)(ctx, W, H, tt, name === "gap" ? 1 : a);
+
   const canvas = document.getElementById("scene");
   const ctx = canvas.getContext("2d");
   let W, H, cur = "wave", target = "wave", mix = 1;
@@ -196,17 +320,13 @@
     W = canvas.width; H = canvas.height;
     ctx.fillStyle = "#0b0b0e";
     ctx.fillRect(0, 0, W, H);
-    if (cur === "wave") drawWave(ctx, W, H, t, 0.85);
-    else if (cur === "disk") drawDisk(ctx, W, H, t, 0.85);
-    else drawGap(ctx, W, H, t, 1);
+    paintScene(cur, 0.85, t);
     if (cur !== target) {
       ctx.fillStyle = "rgba(11,11,14,1)";
       ctx.globalAlpha = 1 - mix;
       ctx.fillRect(0, 0, W, H);
       ctx.globalAlpha = 1;
-      if (target === "wave") drawWave(ctx, W, H, t, 0.85 * mix);
-      else if (target === "disk") drawDisk(ctx, W, H, t, 0.85 * mix);
-      else drawGap(ctx, W, H, t, mix);
+      paintScene(target, 0.85 * mix, t);
     }
     requestAnimationFrame(loop);
   };
