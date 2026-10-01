@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aawhan Vyas — Behind the Scenes</title>
-  <meta name="description" content="The raw footage — how Aawhan actually builds, thinks, boxes and makes music.">
+  <meta name="description" content="Not the projects — the person. Where the 3am habit started, why I can't stop testing things, and what's actually going on.">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=8">
+  <link rel="stylesheet" href="assets/css/style.css?v=9">
 </head>
 <body class="locked">
 
@@ -39,98 +39,89 @@
   <main class="tour">
     <!-- CH 01 -->
     <section class="chapter" data-scene="wave">
-      <p class="ch-k mono">ch 01 · the spark</p>
-      <h2 class="ch-big">every build starts with<br>a <em>what if?</em></h2>
-      <p class="ch-p">Mostly it starts with someone complaining. A friend stuck on a
-      workflow that almost works, a tool that breaks on real data, some "someone should
-      really fix this" — and I'm already mentally rewriting it before they finish the
-      sentence. Then I disappear for a weekend and come back with a repo nobody asked me
-      for. This chapter is just an honest record of that.</p>
+      <p class="ch-k mono">ch 01 · 3am</p>
+      <h2 class="ch-big">i wake up with<br>tabs <em>already open.</em></h2>
+      <p class="ch-p">It started as a party trick. A friend would complain about some
+      tool that half-worked, and before they finished the sentence I'd already be mentally
+      rewriting it — not to be helpful, just because the broken version bothered me more
+      than the conversation did.</p>
+      <p class="ch-p">Somewhere around 2am in a Bhopal hostel that stopped being a trick.
+      I'd be lying awake convinced I could fix it faster alone than we could together, and
+      usually I was wrong. But I'd do it anyway. Still do. That's the whole origin story —
+      there isn't a better one.</p>
     </section>
 
     <!-- CH 02 -->
     <section class="chapter" data-scene="gap">
-      <p class="ch-k mono">ch 02 · the gap</p>
-      <h2 class="ch-big">fluent <em>≠</em> correct.</h2>
-      <div class="gap-nums">
-        <div class="gap good">
-          <p class="g-num mono">100%</p>
-          <p class="g-l mono">grounded baseline · pass rate + root-cause accuracy</p>
-        </div>
-        <div class="gap bad">
-          <p class="g-num mono">10%</p>
-          <p class="g-l mono">Qwen 2.5 3B · 90% average confidence</p>
-        </div>
-      </div>
-      <p class="ch-p">The wrong answers are never the ones that sound unsure. I learned
-      this the hard way — watched a model ace a demo, then fall apart the moment the inputs
-      got messy. So now I ask the boring question first: <b>against what ground truth?</b>
-      Thirty runs per config, three scenarios, every single time. It's unglamorous work and
-      it's most of why I still ship.</p>
+      <p class="ch-k mono">ch 02 · nobody's watching</p>
+      <h2 class="ch-big">the loneliest<br>part is <em>4am.</em></h2>
+      <p class="ch-p">Shipping something I'm genuinely proud of, and having nobody to
+      tell. Not sad — just quiet in a way that's hard to explain to people who ask what I
+      do. "Oh, you build AI stuff?" and then the conversation moves on, and I go back to a
+      repo with zero watchers and zero stars and I keep going anyway.</p>
+      <p class="ch-p">I'm a final-year student surrounded by people already employed at
+      companies I'd have killed for a year ago. I've done the imposter maths. I keep
+      building through it, mostly by refusing to let the question "is this good enough"
+      be the one that decides.</p>
     </section>
 
     <!-- CH 03 -->
-    <section class="chapter" data-scene="disk">
-      <p class="ch-k mono">ch 03 · the pipeline</p>
-      <h2 class="ch-big">promotion is <em>earned.</em></h2>
-      <p class="ch-p mono ch-steps">register → version → <b>gate</b> → serve → watch</p>
-      <p class="ch-p">I don't like shipping things I can't defend, so ModelDock is built to
-      be strict with me. Nothing gets promoted unless it clears the eval threshold — 72
-      tests in CI/CD, authenticated inference, drift monitoring once it's live. It's blocked
-      my own releases more than once. Best feature in it, honestly.</p>
+    <section class="chapter" data-scene="signal">
+      <p class="ch-k mono">ch 03 · the thing i can't stop</p>
+      <h2 class="ch-big">i run the eval<br><em>again.</em></h2>
+      <p class="ch-p">Here's something slightly uncool about me: I don't trust a thing
+      until I've tried to break it on purpose. Thirty runs. Three scenarios. Re-run them
+      because one result looked suspiciously good and I don't believe good luck.</p>
+      <p class="ch-p">It's not discipline, honestly. It's that if something I built turns
+      out to be quietly wrong, I need to be the one who finds it — not the user, and not
+      some engineer six months later. I caught a 10% accuracy model being 90% confident
+      about its wrongness that way. I'd rather know. Always have.</p>
     </section>
 
     <!-- CH 04 -->
-    <section class="chapter chapter-list" data-scene="grid">
-      <p class="ch-k mono">ch 04 · the receipts</p>
-      <h2 class="ch-big">don't take my word for it.</h2>
-      <ul class="ch-rows mono">
-        <li><a href="https://github.com/aawhan0/Dasaiko" target="_blank" rel="noopener">dasaiko <span>+86% recall@5 · live at dasaiko.dev ↗</span></a></li>
-        <li><a href="https://github.com/aawhan0/TraceBack" target="_blank" rel="noopener">traceback <span>100% grounded vs 10% @ 90% conf ↗</span></a></li>
-        <li><a href="https://github.com/aawhan0/ModelDock" target="_blank" rel="noopener">modeldock <span>★9 · 72 tests · gated lifecycle ↗</span></a></li>
-        <li><a href="https://github.com/provena/provena/pull/153" target="_blank" rel="noopener">provena #153 <span>✓ 498 passed · 33 skipped ↗</span></a></li>
-        <li><a href="https://github.com/aawhan0/ClearLabel-AI" target="_blank" rel="noopener">clearlabel-ai <span>yolov8 auto-annotation · dual audit ↗</span></a></li>
-      </ul>
-      <p class="ch-p">Every line above opens something you can read, run or clone.
-      The rest of the drawer is on <a class="ch-link" href="https://github.com/aawhan0" target="_blank" rel="noopener">github ↗</a>,
-      and the longer version lives on <a class="ch-link" href="brief/#work">on stage →</a></p>
+    <section class="chapter" data-scene="grid">
+      <p class="ch-k mono">ch 04 · the actual day</p>
+      <h2 class="ch-big">college in the morning,<br>the repo at <em>night.</em></h2>
+      <p class="ch-p">So this is the unsexy version. Eight-ish lecture, back by four, dinner
+      with whoever's around, then the screen becomes mine until it's genuinely too late to
+      be making sense. That stretch is most of why I finished a client site in three months
+      and ~50 repos in three years.</p>
+      <p class="ch-p">The trade is real and I'm not going to dress it up. I say no to a lot
+      of things I'd rather be doing. But I picked this deliberately, and I'd pick it again
+      this month.</p>
     </section>
 
     <!-- CH 05 -->
-    <section class="chapter chapter-list" data-scene="signal">
-      <p class="ch-k mono">ch 05 · the signal</p>
-      <h2 class="ch-big">still curious, out loud.</h2>
-      <p class="ch-p">I read the papers, then write them up in public. Explaining something to
-      strangers is a brutal flashcard system — and the fastest way to find out I was wrong
-      about it three paragraphs in.</p>
-      <ul class="ch-rows mono" id="story-sigs"></ul>
-      <p class="ch-p">more on <a class="ch-link" href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">linkedin ↗</a></p>
+    <section class="chapter chapter-list" data-scene="disk">
+      <p class="ch-k mono">ch 05 · out loud</p>
+      <h2 class="ch-big">i post things<br>i get <em>wrong, publicly.</em></h2>
+      <p class="ch-p">I read a paper, write it up badly, post it, and get politely
+      corrected by someone much smarter. Which sounds like a bad system until you realise
+      it's the fastest way I've found to find out I misunderstood something while it was
+      still cheap to fix.</p>
+      <p class="ch-p">The stuff that actually shipped — the model registry, the grounded
+      retrieval thing, the incident tools — is all just this habit pointed at bigger
+      problems. <a class="ch-link" href="brief/#work">the list is on stage →</a></p>
     </section>
 
     <!-- CH 06 -->
     <section class="chapter chapter-list" data-scene="eq">
       <p class="ch-k mono">ch 06 · off the clock</p>
-      <h2 class="ch-big">boxing keeps <em>music</em> honest.</h2>
-      <p class="ch-p">When I'm not shipping, I'm on the heavy bag or in front of a midi
-      keyboard. Boxing is the one place where overcommitting on vibes gets you hit, which
-      makes it a decent training ground for ML work. Amateur, still undefeated against the
-      bag. Ask me about my footwork sometime — or don't, we'll be here a while.</p>
-      <p class="ch-p">Music's the other half. I write and release as <em>aawhan</em> —
-      lo-fi confessionals for the late hours, Joji-to-Yung-Lean territory. Out on Spotify
-      and wherever else people actually listen.</p>
-      <ul class="ch-rows mono">
-        <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">dilruba <span>single · the one they keep on loop ↗</span></a></li>
-        <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">ionknow//idk <span>the alias, the feeling ↗</span></a></li>
-        <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">aloof <span>with pingaksh ↗</span></a></li>
-        <li><a href="https://open.spotify.com/artist/5fkvtePmA6HhHzRZgP1ZoA" target="_blank" rel="noopener">full discography <span>aawhan · artist profile ↗</span></a></li>
-      </ul>
+      <h2 class="ch-big">boxing keeps<br><em>music</em> honest.</h2>
+      <p class="ch-p">When I'm not shipping, I'm on the heavy bag or at a midi keyboard.
+      Boxing is the only place where overcommitting on vibes gets you hit, which makes it
+      the honest counterweight to a job spent trusting language models. Amateur, still
+      undefeated against the bag.</p>
+      <p class="ch-p">Music is the part nobody was ever going to ask me about at a
+      conference. I write and release as <em>aawhan</em> — lo-fi confessionals for the
+      2am crowd, Joji-to-Yung-Lean territory. <a class="ch-link" href="../music.html">there's a room for it →</a></p>
     </section>
 
     <!-- END -->
     <section class="chapter chapter-end" data-scene="disk">
       <p class="ch-k mono">end of broadcast</p>
       <h2 class="ch-big">got a <em>what if?</em></h2>
-      <p class="ch-p">Send me one. I'll go find the receipts.</p>
+      <p class="ch-p">Send me one. I'll go build it.</p>
       <div class="channels">
         <div class="ch"><span class="ch-k mono">email</span><a href="mailto:vyasaawhan@gmail.com">vyasaawhan@gmail.com <span aria-hidden="true">→</span></a></div>
         <div class="ch"><span class="ch-k mono">github</span><a href="https://github.com/aawhan0" target="_blank" rel="noopener">github.com/aawhan0 <span aria-hidden="true">↗</span></a></div>
@@ -152,7 +143,7 @@
   <iframe id="sc-widget" title="background music — trees by kurtains" allow="autoplay" tabindex="-1"
     src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fkurtains%2Ftree&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=true&amp;show_reposts=false&amp;buying=false&amp;sharing=false&amp;visual=false"></iframe>
 
-  <script src="assets/js/data.js?v=8" defer></script>
-  <script src="assets/js/story.js?v=8" defer></script>
+  <script src="assets/js/data.js?v=9" defer></script>
+  <script src="assets/js/story.js?v=9" defer></script>
 </body>
 </html>

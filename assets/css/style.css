@@ -465,18 +465,43 @@ section { margin-bottom: 4.5rem; }
   padding: 0.28rem 0.65rem;
   display: inline-flex; align-items: center; gap: 0.4rem;
 }
-.chips img { width: 13px; height: 13px; flex: none; opacity: 0.85; }
-html.light .chips img { filter: invert(1); opacity: 0.7; }
-.matrix { border-top: 1px solid var(--line); }
-.mx-row {
-  display: grid; grid-template-columns: 200px 1fr; gap: 1.5rem;
-  padding: 1.1rem 0; border-bottom: 1px solid var(--line);
-  align-items: start;
+.chips img { width: 13px; height: 13px; flex: none; }
+/* logos are brand-coloured — never invert them, the colour is the point */
+html.light .chips img { filter: none; }
+/* chips with no brand mark get a neutral dot so they still read as chips */
+.chips span:not(:has(img))::before {
+  content: ""; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--dim); flex: none;
 }
-.mx-k { font-size: 0.64rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); padding-top: 0.45rem; }
-.mx-row .chips { margin: 0; }
-.mx-row .chips span { padding: 0.45rem 0.9rem; text-align: center; flex: 1 0 auto; min-width: 90px; }
-@media (max-width: 720px) { .mx-row { grid-template-columns: 1fr; gap: 0.5rem; } }
+.matrix {
+  display: grid; gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(198px, 1fr));
+  align-items: start;   /* cards hug their content — no dead space */
+}
+.mx-row {
+  display: flex; flex-direction: column; gap: 0.6rem;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px; padding: 1rem 1.1rem;
+  transition: border-color 0.2s;
+}
+.mx-row:hover { border-color: rgba(255, 178, 107, 0.35); }
+.mx-k {
+  font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--accent); padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--line); margin: 0;
+}
+.mx-row .chips { margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.mx-row .chips span {
+  display: flex; align-items: center; gap: 0.55rem;
+  padding: 0.4rem 0.55rem; width: 100%; text-align: left;
+  border: 1px solid transparent; border-radius: 7px;
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 0.18s, background 0.18s;
+}
+.mx-row .chips span:hover { border-color: var(--line); background: rgba(255, 255, 255, 0.045); }
+.mx-row .chips img { width: 15px; height: 15px; }
+html.light .mx-row .chips span { background: rgba(0, 0, 0, 0.02); }
+html.light .mx-row .chips span:hover { background: rgba(0, 0, 0, 0.04); }
 
 /* ── work rows ───────────────────────────────────────────── */
 .rows { list-style: none; border-top: 1px solid var(--line); }
