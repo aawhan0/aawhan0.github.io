@@ -587,7 +587,14 @@ html { scroll-behavior: smooth; }
   border: 3px solid #000;
   box-shadow: 10px 10px 0 #000;
 }
-.a-pop > img {
+/* <picture> is only a format chooser. display:contents drops it from
+   the layout tree so the img below is still an effective direct child
+   of .a-pop and these existing `> img` rules keep matching unchanged. */
+.a-pop > picture {
+  display: contents;
+}
+.a-pop > img,
+.a-pop > picture > img {
   position: relative;
   z-index: 1;
   display: block;
@@ -748,7 +755,8 @@ html { scroll-behavior: smooth; }
   border-radius: 0;
   box-shadow: none;
 }
-.a-collage .a-frame > .a-pop > img {
+.a-collage .a-frame > .a-pop > img,
+.a-collage .a-frame > .a-pop > picture > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
