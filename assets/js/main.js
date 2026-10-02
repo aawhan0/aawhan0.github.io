@@ -349,6 +349,43 @@
     });
   });
 
+  /* ── side rail: mark the section currently being read ──────
+     Picks whichever section covers the upper third of the viewport
+     so the active item changes as you scroll rather than jumping at
+     the midpoint. Each rail link mirrors its section's hue. */
+  const railLinks = Array.from(document.querySelectorAll(".rail a[href^='#']"));
+  const railTargets = railLinks
+    .map((a) => document.getElementById(a.getAttribute("href").slice(1)))
+    .filter(Boolean);
+  if (railLinks.length && railTargets.length) {
+    const setActive = (id) => {
+      railLinks.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === `#${id}`));
+    };
+    setActive(railTargets[0].id);
+    if ("IntersectionObserver" in window) {
+      const ratios = new Map();
+      const railRio = new IntersectionObserver((entries) => {
+        for (const e of entries) ratios.set(e.target.id, e.isIntersecting ? e.intersectionRatio : 0);
+        let bestId = null, bestRatio = 0;
+        for (const [id, r] of ratios) if (r > bestRatio) { bestRatio = r; bestId = id; }
+        if (bestId) setActive(bestId);
+      }, { threshold: [0, 0.15, 0.35, 0.6, 0.9], rootMargin: "-12% 0px -40% 0px" });
+      railTargets.forEach((s) => railRio.observe(s));
+    } else {
+      const onScroll = () => {
+        const line = window.innerHeight * 0.35;
+        let hit = railTargets[0];
+        for (const s of railTargets) {
+          const r = s.getBoundingClientRect();
+          if (r.top <= line && r.bottom >= line) { hit = s; break; }
+        }
+        setActive(hit.id);
+      };
+      addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+    }
+  }
+
   /* ── linkedin one-liners (dates decoded from post ids) ───── */
   const sigDateLabel = (id) => {
     const d = new Date(Number((BigInt(id) >> 22n).toString()));

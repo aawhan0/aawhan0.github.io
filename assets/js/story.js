@@ -173,43 +173,84 @@
   };
 
 
-  const drawBench = (ctx, W, H, t, alpha) => {
-    // eval bench: runs creeping up to a pass-threshold line, one of them straying
-    const padX = W * 0.12, padY = H * 0.18;
-    const gw = W - padX * 2, gh = H - padY * 2;
-    const thresh = padY + gh * 0.34;
-    ctx.strokeStyle = "rgba(90,200,220," + (0.22 * alpha) + ")";
-    ctx.lineWidth = 1 * dpr;
-    ctx.beginPath();
-    ctx.moveTo(padX, padY); ctx.lineTo(padX, padY + gh); ctx.lineTo(padX + gw, padY + gh);
-    ctx.stroke();
-    ctx.strokeStyle = "rgba(120,255,225," + (0.5 * alpha) + ")";
-    ctx.setLineDash([7 * dpr, 7 * dpr]);
-    ctx.beginPath(); ctx.moveTo(padX, thresh); ctx.lineTo(padX + gw, thresh); ctx.stroke();
-    ctx.setLineDash([]);
-    for (let r = 0; r < 3; r++) {
-      const g = [150, 225, 255][r], b = [235, 245, 255][r];
-      ctx.strokeStyle = "rgba(" + g + "," + b + ",255," + (0.7 * alpha) + ")";
-      ctx.lineWidth = (1.6 + r * 0.2) * dpr;
-      ctx.beginPath();
-      const n = 60;
-      for (let i = 0; i <= n; i++) {
-        const u = i / n;
-        const conv = 1 - Math.pow(1 - u, 2 + r);
-        const fail = r === 2 ? -0.16 * Math.exp(-u * 3) * Math.sin(u * 9 + t) : 0;
-        const y = thresh + (gh * 0.3) * (1 - conv) + fail * gh
-          + Math.sin(u * 14 + t * (0.6 + r * 0.2) + r) * 4 * dpr * (1 - conv);
-        if (i) ctx.lineTo(padX + gw * u, y); else ctx.moveTo(padX, y);
-      }
-      ctx.stroke();
+  /* ── the dawn family ───────────────────────────────────────────
+     ch02, ch04 and ch05 all stand in the same light: horizontal sky
+     strips that warm up toward a low sun, a hard dark ground line and
+     one silhouette in front of it. Same sunrise, three landscapes, so
+     scrolling between them never feels like the same room twice.    */
+
+  /* sky strips, brightening the closer they sit to the sun */
+  const skyBands = (ctx, W, H, hz, sunY, warm, alpha) => {
+    const bands = 16, span = hz - sunY + H * 0.2;
+    for (let i = 0; i < bands; i++) {
+      const y = sunY + (i / bands) * span;
+      const prox = 1 - Math.min(1, Math.abs(y - sunY) / (H * 0.45));
+      ctx.fillStyle = "rgba(" + warm[0] + "," + Math.floor(warm[1] + prox * 90) + "," +
+        Math.floor(warm[2] + prox * 80) + "," + ((0.02 + prox * 0.05) * alpha) + ")";
+      ctx.fillRect(0, y, W, span / bands + 1);
     }
-    for (let i = 0; i < 9; i++) {
-      const u = i / 8;
-      const px = padX + gw * u;
-      const py = thresh + gh * 0.3 * Math.pow(1 - u, 2)
-        + Math.sin(u * 14 + t * 0.6) * 4 * dpr * Math.pow(1 - u, 2);
-      ctx.fillStyle = `rgba(140,225,255,${0.7 * alpha})`;
-      ctx.fillRect(px - 1.5 * dpr, py - 1.5 * dpr, 3 * dpr, 3 * dpr);
+  };
+
+  /* the disc and its halo. fall is the cooler tone it fades into. */
+  const sun = (ctx, x, y, half, glow, core, fall, alpha) => {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, glow * dpr);
+    g.addColorStop(0, "rgba(" + core[0] + "," + core[1] + "," + core[2] + "," + (0.4 * alpha) + ")");
+    g.addColorStop(1, "rgba(" + fall[0] + "," + fall[1] + "," + fall[2] + ",0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(x - glow * dpr, y - glow * dpr, glow * 2 * dpr, glow * 2 * dpr);
+    const s = half * dpr;
+    ctx.fillStyle = "rgba(" + core[0] + "," + core[1] + "," + core[2] + "," + (0.7 * alpha) + ")";
+    ctx.fillRect(x - s, y - s, s * 2, s * 2);
+  };
+
+  const dark = "rgba(8,8,11,";
+
+  const drawBench = (ctx, W, H, t, alpha) => {
+    // thirty runs against a pass line: a low sun, the mark held level
+    // across the whole sky, one post per run. all but one get over.
+    const hz = H * 0.72, thresh = H * 0.4;
+    const rise = 0.5 + 0.5 * Math.sin(t * 0.06);
+    const sunY = hz - (0.06 + rise * 0.1) * H * 0.5;
+    const sunX = W * 0.5 + Math.sin(t * 0.03) * W * 0.06;
+    skyBands(ctx, W, H, hz, sunY, [255, 162, 84], alpha);
+    sun(ctx, sunX, sunY, 30, 150, [255, 226, 156], [255, 176, 96], alpha);
+
+    ctx.setLineDash([8 * dpr, 8 * dpr]);
+    ctx.strokeStyle = "rgba(255,234,196," + (0.3 * alpha) + ")";
+    ctx.lineWidth = 1.2 * dpr;
+    ctx.beginPath();
+    ctx.moveTo(W * 0.05, thresh); ctx.lineTo(W * 0.95, thresh);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // a far ridge, low and wide, so it never reads as ch04's skyline
+    let s = 5;
+    const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
+    const rbw = 54 * dpr;
+    for (let x = -rbw; x < W + rbw; x += rbw) {
+      const hgt = (0.012 + rnd() * 0.03) * H;
+      ctx.fillStyle = dark + (0.82 * alpha) + ")";
+      ctx.fillRect(x, hz - hgt, rbw - 2 * dpr, hgt);
+    }
+    ctx.fillStyle = dark + (0.9 * alpha) + ")";
+    ctx.fillRect(0, hz, W, H - hz);
+
+    // the runs. the light walks across them, over and over, re-running
+    const n = 14, gap = (W * 0.9) / n;
+    const head = (t * 0.3) % (n + 3) - 1.5;
+    for (let i = 0; i < n; i++) {
+      const x = W * 0.05 + (i + 0.5) * gap;
+      const miss = i === 9;
+      const hgt = (miss ? 0.21 : 0.345 + ((i * 7) % 5) * 0.028) * H;
+      const top = hz - hgt;
+      const near = Math.max(0, 1 - Math.abs(i - head) / 2.4);
+      ctx.fillStyle = dark + (0.88 * alpha) + ")";
+      ctx.fillRect(x - 1.5 * dpr, top, 3 * dpr, hgt);
+      const c = miss ? 5 : 5 + near * 3;
+      ctx.fillStyle = miss
+        ? "rgba(255,124,86," + (0.8 * alpha) + ")"
+        : "rgba(255,238,202," + ((0.28 + near * 0.62) * alpha) + ")";
+      ctx.fillRect(x - c * dpr, top - c * dpr, c * 2 * dpr, c * 2 * dpr);
     }
   };
 
@@ -249,21 +290,9 @@
     const rise = 0.5 + 0.5 * Math.sin(t * 0.08);
     const sunY = hz - (0.18 + rise * 0.16) * H * 0.5;
     const sunX = W * 0.5 + Math.sin(t * 0.05) * W * 0.08;
-    const bands = 16, span = hz - sunY + H * 0.2;
-    for (let i = 0; i < bands; i++) {
-      const y = sunY + (i / bands) * span;
-      const prox = 1 - Math.min(1, Math.abs(y - sunY) / (H * 0.45));
-      ctx.fillStyle = "rgba(255," + Math.floor(150 + prox * 90) + "," + Math.floor(60 + prox * 80) + "," + ((0.02 + prox * 0.05) * alpha) + ")";
-      ctx.fillRect(0, y, W, span / bands + 1);
-    }
-    const g = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 120 * dpr);
-    g.addColorStop(0, "rgba(255,214,140," + (0.4 * alpha) + ")");
-    g.addColorStop(1, "rgba(255,180,90,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(sunX - 120 * dpr, sunY - 120 * dpr, 240 * dpr, 240 * dpr);
-    ctx.fillStyle = "rgba(255,235,190," + (0.7 * alpha) + ")";
-    ctx.fillRect(sunX - 26 * dpr, sunY - 26 * dpr, 52 * dpr, 52 * dpr);
-    ctx.fillStyle = "rgba(8,8,11," + (0.9 * alpha) + ")";
+    skyBands(ctx, W, H, hz, sunY, [255, 150, 60], alpha);
+    sun(ctx, sunX, sunY, 26, 120, [255, 226, 164], [255, 180, 90], alpha);
+    ctx.fillStyle = dark + (0.9 * alpha) + ")";
     ctx.fillRect(0, hz, W, H - hz);
     let s = 9;
     const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
@@ -316,29 +345,67 @@
 
 
   const drawSignal = (ctx, W, H, t, alpha) => {
-    // radar sweep: expanding rings, a slow scan arm, blinking blips
-    const cx = W * 0.5, cy = H * 0.42, R = Math.min(W, H) * 0.55;
-    for (let i = 0; i < 3; i++) {
-      const k = (t * 0.22 + i / 3) % 1;
-      ctx.beginPath();
-      ctx.arc(cx, cy, k * R, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255,178,107,${(1 - k) * 0.26 * alpha})`;
-      ctx.lineWidth = 1.2 * dpr;
-      ctx.stroke();
-    }
-    const a = t * 0.9;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
-    ctx.strokeStyle = `rgba(255,178,107,${0.3 * alpha})`;
-    ctx.stroke();
+    // out loud on purpose: a mast at sunrise, arcs going out from its
+    // head carrying the takes - wrong ones included
+    const hz = H * 0.7;
+    const rise = 0.5 + 0.5 * Math.sin(t * 0.09);
+    const sunY = hz - (0.08 + rise * 0.14) * H * 0.5;
+    const sunX = W * 0.26 + Math.sin(t * 0.04) * W * 0.05;
+    skyBands(ctx, W, H, hz, sunY, [255, 138, 56], alpha);
+    sun(ctx, sunX, sunY, 24, 140, [255, 206, 128], [255, 168, 84], alpha);
+
+    // the takes themselves, drifting outward on the arcs
     let s = 11;
     const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
-    for (let i = 0; i < 9; i++) {
-      const bx = cx + (rnd() - 0.5) * W * 0.6, by = cy + (rnd() - 0.5) * H * 0.5;
+    const phase = rnd();
+    for (let i = 0; i < 7; i++) {
+      const k = ((t * 0.09 + i / 7 + phase) % 1);
+      const ang = -Math.PI / 2 + (rnd() - 0.5) * 2.2;
+      const rad = k * H * 0.72;
+      const bx = W * 0.68 + Math.cos(ang) * rad, by = hz - H * 0.3 + Math.sin(ang) * rad;
       const blink = 0.25 + 0.75 * Math.abs(Math.sin(t * 1.4 + i * 2.1));
-      ctx.fillStyle = `rgba(233,233,238,${blink * alpha})`;
+      ctx.fillStyle = "rgba(255,226,180," + (blink * 0.75 * alpha) + ")";
       ctx.fillRect(bx - 1.5 * dpr, by - 1.5 * dpr, 3 * dpr, 3 * dpr);
+    }
+
+    ctx.fillStyle = dark + (0.9 * alpha) + ")";
+    ctx.fillRect(0, hz, W, H - hz);
+
+    // the mast: tapering lattice with cross-bracing, standing in front
+    const mx = W * 0.68, top = hz - H * 0.3, foot = 15 * dpr;
+    ctx.strokeStyle = dark + (0.92 * alpha) + ")";
+    ctx.lineWidth = 2 * dpr;
+    ctx.beginPath();
+    ctx.moveTo(mx - foot, hz); ctx.lineTo(mx - 3 * dpr, top);
+    ctx.moveTo(mx + foot, hz); ctx.lineTo(mx + 3 * dpr, top);
+    ctx.stroke();
+    const seg = 8;
+    ctx.lineWidth = 1.2 * dpr;
+    ctx.beginPath();
+    for (let i = 0; i < seg; i++) {
+      const y0 = hz - (hz - top) * (i / seg), y1 = hz - (hz - top) * ((i + 1) / seg);
+      const w0 = 3 * dpr + (foot - 3 * dpr) * (1 - i / seg);
+      const w1 = 3 * dpr + (foot - 3 * dpr) * (1 - (i + 1) / seg);
+      ctx.moveTo(mx - w0, y0); ctx.lineTo(mx + w1, y1);
+      ctx.moveTo(mx + w0, y0); ctx.lineTo(mx - w1, y1);
+    }
+    ctx.stroke();
+    // guy wires down to the ground
+    ctx.lineWidth = 1 * dpr;
+    ctx.beginPath();
+    ctx.moveTo(mx - 3 * dpr, top); ctx.lineTo(mx - foot * 2.6, hz);
+    ctx.moveTo(mx + 3 * dpr, top); ctx.lineTo(mx + foot * 2.6, hz);
+    ctx.stroke();
+    // the lamp on top, and the arcs going out from it
+    ctx.fillStyle = "rgba(255,150,110," + ((0.4 + 0.6 * Math.abs(Math.sin(t * 2.2))) * alpha) + ")";
+    ctx.fillRect(mx - 2 * dpr, top - 5 * dpr, 4 * dpr, 4 * dpr);
+    for (let i = 0; i < 3; i++) {
+      const k = (t * 0.15 + i / 3) % 1;
+      ctx.beginPath();
+      ctx.arc(mx, top, k * H * 0.72, -Math.PI * 0.92, -Math.PI * 0.08);
+      ctx.strokeStyle = "rgba(255,206,140," + ((1 - k) * 0.28 * alpha) + ")";
+      ctx.lineWidth = 1.3 * dpr;
+      ctx.stroke();
     }
   };
 
