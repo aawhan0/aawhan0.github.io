@@ -57,6 +57,7 @@
     const pill = document.getElementById("bg-music");
     const pillBtn = document.getElementById("bm-toggle");
     let widget = null;
+    let widgetLoading = false;
     let ready = false;
     let pendingPlay = false;
     let songWanted = false;
@@ -68,27 +69,39 @@
     };
     setPill(false);
 
-    const play = () => {
-      if (!songWanted || !widget) return;
-      if (ready) widget.play(); else pendingPlay = true;
+    /* Loaded on first intent, not on page load. Playback here can only begin
+       from the gate's "enter" click or the corner pill, so fetching the whole
+       SoundCloud player up front (iframe + two widget bundles + a track
+       resolve) was pure load-time cost on the critical path. pendingPlay
+       latches a click that lands before the widget is up, so nothing is lost. */
+    const loadWidget = () => {
+      if (widget || widgetLoading) return;
+      widgetLoading = true;
+      const frame = document.getElementById("sc-widget");
+      if (frame && !frame.src && frame.dataset.src) frame.src = frame.dataset.src;
+      const api = document.createElement("script");
+      api.src = "https://w.soundcloud.com/player/api.js";
+      api.onload = () => {
+        widget = SC.Widget(frame);
+        widget.bind(SC.Widget.Events.READY, () => {
+          ready = true;
+          widget.setVolume(65);
+          if (pendingPlay) { pendingPlay = false; widget.play(); }
+        });
+        widget.bind(SC.Widget.Events.PLAY, () => setPill(true));
+        widget.bind(SC.Widget.Events.PAUSE, () => setPill(false));
+        widget.bind(SC.Widget.Events.FINISH, () => {
+          if (songWanted) widget.play(); // the loop
+        });
+      };
+      document.head.appendChild(api);
     };
 
-    const api = document.createElement("script");
-    api.src = "https://w.soundcloud.com/player/api.js";
-    api.onload = () => {
-      widget = SC.Widget(document.getElementById("sc-widget"));
-      widget.bind(SC.Widget.Events.READY, () => {
-        ready = true;
-        widget.setVolume(65);
-        if (pendingPlay) { pendingPlay = false; widget.play(); }
-      });
-      widget.bind(SC.Widget.Events.PLAY, () => setPill(true));
-      widget.bind(SC.Widget.Events.PAUSE, () => setPill(false));
-      widget.bind(SC.Widget.Events.FINISH, () => {
-        if (songWanted) widget.play(); // the loop
-      });
+    const play = () => {
+      if (!songWanted) return;
+      if (!widget) { loadWidget(); pendingPlay = true; return; }
+      if (ready) widget.play(); else pendingPlay = true;
     };
-    document.head.appendChild(api);
 
     startSong = () => {
       songWanted = true;
@@ -102,8 +115,9 @@
       try { localStorage.setItem("aw-music", playing ? "off" : "on"); } catch (e) {}
       songWanted = !playing;
       setPill(!playing);
-      if (!widget) return;
-      if (playing) widget.pause(); else play();
+      // unmute may be the first intent of the visit — play() lazily loads the
+      // widget, so don't short-circuit here when it isn't up yet.
+      if (playing && widget) widget.pause(); else if (!playing) play();
     });
   }
 

@@ -12,8 +12,17 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=16">
+  <!-- Google Fonts is render-blocking as a plain stylesheet. Loaded non-blocking
+       instead: preloaded (so the fetch starts during the preload scan at high
+       priority) but applied via media="print", with onload flipping it to "all".
+       First paint happens immediately in the fallback stack and the webfonts
+       swap in behind it — which font-display:swap was already doing. Same fonts,
+       same rendering; the document just no longer blocks on a third-party
+       round trip. The noscript copy keeps it working without JS. -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap"></noscript>
+  <link rel="stylesheet" href="assets/css/style.css?v=17">
   <link rel="stylesheet" href="assets/css/archive.css?v=2">
 </head>
 <body class="archive locked">
@@ -365,9 +374,12 @@
       <span id="bm-label">trees — kurtains</span>
     </button>
   </div>
+  <!-- data-src rather than src: the SoundCloud player is only fetched once
+       someone actually asks for sound (music.js copies this into .src on first
+       intent). Nothing here is needed to render the page. -->
   <iframe id="sc-widget" title="background music — trees by kurtains" allow="autoplay" tabindex="-1"
-    src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fkurtains%2Ftree&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=true&amp;show_reposts=false&amp;buying=false&amp;sharing=false&amp;visual=false"></iframe>
+    data-src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fkurtains%2Ftree&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=true&amp;show_reposts=false&amp;buying=false&amp;sharing=false&amp;visual=false"></iframe>
 
-  <script src="assets/js/music.js?v=13" defer></script>
+  <script src="assets/js/music.js?v=15" defer></script>
 </body>
 </html>

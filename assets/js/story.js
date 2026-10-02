@@ -74,6 +74,7 @@
   const pill = document.getElementById("bg-music");
   const pillBtn = document.getElementById("bm-toggle");
   let widget = null;
+  let widgetLoading = false;
   let songWanted = false;
 
   const setPill = (playing) => {
@@ -83,30 +84,47 @@
   };
   setPill(false);
 
+  /* The widget was fetched + instantiated on every page load, even though
+     playback can only ever begin from a real user gesture ("continue with
+     sound", or the corner pill). On a cold visit that meant the whole
+     SoundCloud stack — player iframe, two widget bundles, a track resolve
+     round trip — competing with first paint for bandwidth on a page that was
+     already the slowest of the four.
+
+     So it is now loaded on first intent instead. songWanted is latched, and
+     the READY handler plays only if intent arrived before the widget was up,
+     so a click during the load window is never dropped. The <iframe> carries
+     data-src (see story.html) so its src is set at the same moment. */
+  const loadWidget = () => {
+    if (widget || widgetLoading) return;
+    widgetLoading = true;
+    const frame = document.getElementById("sc-widget");
+    if (frame && !frame.src && frame.dataset.src) frame.src = frame.dataset.src;
+    const api = document.createElement("script");
+    api.src = "https://w.soundcloud.com/player/api.js";
+    api.onload = () => {
+      widget = SC.Widget(frame);
+      widget.bind(SC.Widget.Events.READY, () => {
+        widget.setVolume(65);
+        if (songWanted) widget.play();
+      });
+      widget.bind(SC.Widget.Events.PLAY, () => setPill(true));
+      widget.bind(SC.Widget.Events.PAUSE, () => setPill(false));
+      // loop forever: restart unless the visitor explicitly muted us
+      widget.bind(SC.Widget.Events.FINISH, () => {
+        if (songWanted) widget.play();
+        else setPill(false);
+      });
+    };
+    document.head.appendChild(api);
+  };
+
   const startSong = () => {
     songWanted = true;
     try { localStorage.setItem("aw-music", "on"); } catch (e) {}
     setPill(true);
-    if (widget) widget.play();
+    if (widget) widget.play(); else loadWidget();
   };
-
-  const api = document.createElement("script");
-  api.src = "https://w.soundcloud.com/player/api.js";
-  api.onload = () => {
-    widget = SC.Widget(document.getElementById("sc-widget"));
-    widget.bind(SC.Widget.Events.READY, () => {
-      widget.setVolume(65);
-      if (songWanted) widget.play();
-    });
-    widget.bind(SC.Widget.Events.PLAY, () => setPill(true));
-    widget.bind(SC.Widget.Events.PAUSE, () => setPill(false));
-    // loop forever: restart unless the visitor explicitly muted us
-    widget.bind(SC.Widget.Events.FINISH, () => {
-      if (songWanted) widget.play();
-      else setPill(false);
-    });
-  };
-  document.head.appendChild(api);
 
   pillBtn.addEventListener("click", () => {
     const playing = !pill.classList.contains("paused");
@@ -123,7 +141,8 @@
       if (audioCtx) audioCtx.resume().catch(() => {});
       else startAudio();
       audioOn = true;
-      if (widget) widget.play();
+      // first unmute may be the very first intent on the page — load then
+      if (widget) widget.play(); else loadWidget();
     }
   });
 
@@ -442,7 +461,18 @@
     if (s && s !== target) { target = s; blip(520); }
   };
 
+  /* ── the loop, on demand ───────────────────────────────────
+     This canvas is a fixed full-viewport backdrop behind every
+     chapter, so it was painting 60fps for the entire time the tab
+     was open — including behind the archive, where it is hidden,
+     and while the tab was in the background. Both are pure waste.
+
+     It now halts when the document is hidden and while the
+     archive (`.music-experience`) owns the screen, and resumes
+     otherwise. story-music.js already raises `music-live` for the
+     archive; this is the side that finally reads it.            */
   const t0 = performance.now();
+  let raf = null;
   const loop = (now) => {
     const t = (now - t0) / 1000;
     mix += ((target === cur ? 1 : 0) - mix) * 0.06;
@@ -458,8 +488,24 @@
       ctx.globalAlpha = 1;
       paintScene(target, 0.85 * mix, t);
     }
-    requestAnimationFrame(loop);
+    raf = requestAnimationFrame(loop);
   };
+  const running = () => raf !== null;
+  const archiveOwns = () => document.documentElement.classList.contains("music-live");
+  const resumeLoop = () => { if (!running() && !document.hidden && !archiveOwns()) raf = requestAnimationFrame(loop); };
+  const haltLoop = () => { if (running()) { cancelAnimationFrame(raf); raf = null; } };
+  const syncLoop = () => { if (document.hidden || archiveOwns()) haltLoop(); else resumeLoop(); };
+
+  document.addEventListener("visibilitychange", syncLoop);
+
+  /* story-music.js toggles `html.music-live` when the archive slides
+     into view. Watch the class so the loop stands down the moment the
+     archive arrives, and comes back when it leaves. Attribute filter
+     means this fires only for that one class, not every class change. */
+  if (typeof MutationObserver !== "undefined") {
+    new MutationObserver(syncLoop)
+      .observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  }
 
   let pickQueued = false;
   const onScroll = () => {
@@ -479,7 +525,7 @@
        scene swaps are scrubbed against scroll position, copy rises
        in with a soft blur, and the headline drifts for depth.     */
     gsap.registerPlugin(ScrollTrigger);
-    requestAnimationFrame(loop);
+    resumeLoop();
 
     chapters.forEach((c) => {
       const bits = c.querySelectorAll(".ch-k, .ch-big, .ch-p, .ch-rows, .channels");
@@ -502,7 +548,7 @@
     pick();
   } else {
     /* gsap unavailable (offline or blocked cdn): plain observers */
-    requestAnimationFrame(loop);
+    resumeLoop();
     addEventListener("scroll", onScroll, { passive: true });
     const rio = new IntersectionObserver((entries) => {
       for (const e of entries) if (e.isIntersecting) e.target.classList.add("on");

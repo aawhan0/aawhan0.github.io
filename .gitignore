@@ -1,0 +1,10 @@
+# --- perf tooling (local only, never deployed) ---
+node_modules/
+package.json
+package-lock.json
+.perf/
+
+# --- OS / editor cruft ---
+.DS_Store
+Thumbs.db
+*.log

@@ -12,8 +12,19 @@
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/style.css?v=16">
+  <!-- Google Fonts is render-blocking as a plain stylesheet. Loaded non-blocking
+       instead: preloaded (so the fetch starts during the preload scan at high
+       priority) but applied via media="print", with onload flipping it to "all".
+       First paint happens immediately in the fallback stack and the webfonts
+       swap in behind it — which font-display:swap was already doing. Same fonts,
+       same rendering; the document just no longer blocks on a third-party
+       round trip. The noscript copy keeps it working without JS. -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap"></noscript>
+  <!-- the self-hosted pixel face is used above the fold, so warm it early -->
+  <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/GeistPixel-Square.woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/style.css?v=17">
 </head>
 <body class="brief" data-root="../" data-default-theme="light">
 
@@ -80,8 +91,20 @@
     </div>
     <div class="hero-right">
       <div class="dither-box portrait">
-        <img class="portrait-pixel" src="../assets/img/portrait_PIXEL.png" width="1200" height="1200" alt="pixel-art portrait of aawhan vyas" decoding="async">
-        <img class="portrait-og" src="../assets/img/portrait_OG.png" width="1200" height="1200" alt="aawhan vyas" decoding="async">
+        <!-- Two pictures, one per theme: pixel-art in dark, the photo in light.
+             <picture> lets each offer WebP; srcset gives the browser a 340px
+             step for 1x screens so a phone isn't pulling the 680px file.
+             display:contents on the <picture> in style.css keeps the existing
+             `.portrait img` and theme-swap rules matching unchanged.
+             The dark one is the LCP element, so it's eager + high priority. -->
+        <picture class="portrait-pixel">
+          <source type="image/webp" srcset="../assets/img/portrait-pixel-680-340.webp 340w, ../assets/img/portrait-pixel-680-480.webp 480w, ../assets/img/portrait-pixel-680.webp 680w" sizes="(max-width: 860px) min(320px, 84vw), 340px">
+          <img src="../assets/img/portrait-pixel-680.jpg" srcset="../assets/img/portrait-pixel-680-340.jpg 340w, ../assets/img/portrait-pixel-680-480.jpg 480w, ../assets/img/portrait-pixel-680.jpg 680w" sizes="(max-width: 860px) min(320px, 84vw), 340px" width="680" height="680" alt="pixel-art portrait of aawhan vyas" decoding="async" fetchpriority="high">
+        </picture>
+        <picture class="portrait-og">
+          <source type="image/webp" srcset="../assets/img/portrait-og-680-340.webp 340w, ../assets/img/portrait-og-680-480.webp 480w, ../assets/img/portrait-og-680.webp 680w" sizes="(max-width: 860px) min(320px, 84vw), 340px">
+          <img src="../assets/img/portrait-og-680.jpg" srcset="../assets/img/portrait-og-680-340.jpg 340w, ../assets/img/portrait-og-680-480.jpg 480w, ../assets/img/portrait-og-680.jpg 680w" sizes="(max-width: 860px) min(320px, 84vw), 340px" width="680" height="680" alt="aawhan vyas" decoding="async">
+        </picture>
       </div>
     </div>
   </header>
@@ -456,6 +479,6 @@
   </footer>
 
   <script src="../assets/js/data.js?v=12" defer></script>
-  <script src="../assets/js/main.js?v=13" defer></script>
+  <script src="../assets/js/main.js?v=14" defer></script>
 </body>
 </html>

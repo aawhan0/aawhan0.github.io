@@ -29,6 +29,18 @@
   const gate = document.getElementById("gate");
   const sceneRafs = [];
 
+  /* Both gate scenes are procedural and expensive: the thermal one walks
+     300×360 = 108,000 pixels per frame, each with a pow/exp/hypot. At 60fps
+     that was ~6.5M pixel-ops a second, and Lighthouse measured it as a
+     982ms task on the critical path (TBT 132s on index).
+
+     They only ever sit *behind* the intro gate, so they are not the content
+     — they can afford a lower cadence. 30fps halves the per-second work and
+     is still perfectly smooth for a slow-drifting thermal field, which is
+     what these are. Nothing about the look changes: same draw, fewer of them. */
+  const SCENE_FPS = 30;
+  const SCENE_FRAME_MS = 1000 / SCENE_FPS;
+
   const makeScene = (canvas, draw) => {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -41,14 +53,20 @@
     window.addEventListener("resize", size);
     if (reduced) { draw(ctx, W, H, 0); return; }
     const t0 = performance.now();
+    let last = -Infinity;
     const loop = (now) => {
-      draw(ctx, W, H, (now - t0) / 1000);
+      /* frame-rate cap: skip the draw unless the budget has elapsed, but
+         keep the rAF chain alive so the scene can resume without a restart. */
+      if (now - last >= SCENE_FRAME_MS) {
+        last = now - ((now - last) % SCENE_FRAME_MS);   // no drift accumulation
+        draw(ctx, W, H, (now - t0) / 1000);
+      }
       sceneRafs.push(requestAnimationFrame(loop));
     };
     sceneRafs.push(requestAnimationFrame(loop));
   };
 
-  const stopScenes = () => { sceneRafs.forEach((id) => cancelAnimationFrame(id)); };
+  const stopScenes = () => { sceneRafs.forEach((id) => cancelAnimationFrame(id)); sceneRafs.length = 0; };
 
   // left: ascii ridge wave
   const CHARS = " .·:;=+*#%@";
@@ -179,7 +197,12 @@
           const s = y / BH - sweep;
           v += 0.1 * Math.exp(-(s * s) / 0.00098);
           // vignette, then sensor grain
-          v *= 1 - 0.5 * Math.pow(Math.hypot(x / BW - 0.5, y / BH - 0.5) * 1.42, 2.4);
+          /* Math.hypot(a,b) -> sqrt(a*a+b*b) and Math.pow(x,2.4) -> x*x*pow(x,0.4)
+             are the same curve to within float noise, but hypot/pow are the two
+             slowest calls in this inner loop and this runs 108k times a frame. */
+          const vx = x / BW - 0.5, vy = y / BH - 0.5;
+          const rr = Math.sqrt(vx * vx + vy * vy) * 1.42;
+          v *= 1 - 0.5 * rr * rr * Math.pow(rr, 0.4);
           v += (hash(x + frame, y) - 0.5) * 0.05;
           v = v < 0 ? 0 : v > 1 ? 1 : v;
           const q = (v * 255) | 0;

@@ -19,7 +19,9 @@
   --blue: #8fb0e8;
   --green: #4ade80;
   --mono: "JetBrains Mono", ui-monospace, monospace;
-  --pixel: "VT323", var(--mono);
+  /* the metric-matched local stand-in sits directly behind the real pixel
+     font, so the pre-swap box matches and the arrival doesn't reflow */
+  --pixel: "VT323", "Geist Pixel Fallback", var(--mono);
   --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --display: "Anton", var(--ui);
 }
@@ -46,6 +48,25 @@ html, body { overflow-x: clip; }
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+}
+
+/* Metric-matched stand-in for "Geist Pixel", used while the real woff2 is
+   still in flight. The webfonts now load non-blocking, so there is a real
+   window where text renders in the fallback stack — and because the pixel
+   font has very different vertical metrics from the mono font it used to fall
+   back to, that swap was reflowing the brief hero (CLS 0.079 -> 0.098).
+
+   These overrides are the measured metrics of GeistPixel-Square.woff2
+   (upm 1000, winAsc 1.088, winDesc 0.394) applied to a local monospace, so the
+   box the text reserves is the same either way and the swap moves nothing.
+   Only the pre-swap appearance changes; the loaded font is untouched. */
+@font-face {
+  font-family: "Geist Pixel Fallback";
+  src: local("Consolas"), local("DejaVu Sans Mono"), local("Menlo"), local("monospace");
+  ascent-override: 108.8%;
+  descent-override: 39.4%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
 }
 
 /* light theme — same bones, day broadcast */
@@ -486,8 +507,11 @@ html.light .hero::before {
   background-size: 8px 8px;
   z-index: -1; border-radius: 14px;
 }
-/* portrait — portrait_PIXEL in dark mode, portrait_OG in light mode.
-   both sources are 1200×1200; no animation, just a mode swap. */
+/* portrait — portrait-pixel in dark mode, portrait-og in light mode.
+   no animation, just a mode swap. each is a <picture> so the WebP can
+   be offered; display:contents keeps it out of the box's flow, so the
+   .portrait img rule below still applies to the real image. */
+.portrait picture { display: contents; }
 .portrait img {
   display: block; width: 100%; height: auto;
   border-radius: 6px;
