@@ -409,21 +409,10 @@
     }
   };
 
-  const drawEq = (ctx, W, H, t, alpha) => {
-    // low equalizer wall
-    const n = 30, bw = W / n;
-    for (let i = 0; i < n; i++) {
-      const lvl = Math.abs(Math.sin(i * 0.5 + t * 0.45) * 0.62 + Math.sin(i * 1.21 - t * 0.28) * 0.38);
-      const h2 = (0.06 + lvl * 0.6) * H;
-      ctx.fillStyle = `rgba(255,178,107,${(0.05 + lvl * 0.1) * alpha})`;
-      ctx.fillRect(i * bw + bw * 0.3, H - h2, bw * 0.4, h2);
-    }
-  };
-
-  // seven scenes, each drawn exactly once - no background is reused on this page
+  // six scenes, each drawn exactly once - no background is reused on this page
   const scenes = {
     wave: drawWave, bench: drawBench, void: drawVoid, dawn: drawDawn,
-    signal: drawSignal, eq: drawEq, door: drawDoor,
+    signal: drawSignal, door: drawDoor,
   };
   const paintScene = (name, a, tt) => (scenes[name] || drawWave)(ctx, W, H, tt, a);
 

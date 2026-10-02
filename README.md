@@ -13,7 +13,7 @@ step. Deployed automatically by GitHub Pages from `main`.
 | `/` | Landing gate — two halves, pick a door. Deep links like `/#work` redirect to `/brief/#work` |
 | `/brief/` | **On Stage** — hero with pixel-art portrait, pillars, about, experience, expandable evidence rows, stack matrix, LinkedIn one-liners, contact |
 | `story.html` | **Behind the Scenes** — TV intro (sound choice), scroll-driven broadcast chapters, CRT scene |
-| `music.html` | **The Music** — listening room: "trees — kurtains" on loop via a hidden SoundCloud widget. Mute-only toggle, no embeds, no outbound links |
+| `music.html` | **Off the Clock** — the creative archive. Scroll-driven Wrapped-style chapters (2024–2026 listening figures, a wireframe globe, unreleased waveforms, visual edits, taste), plus "trees — kurtains" on loop via a hidden SoundCloud widget |
 
 ## Structure
 
@@ -21,11 +21,12 @@ step. Deployed automatically by GitHub Pages from `main`.
 index.html             landing gate (two halves)
 brief/index.html       the brief — serves at /brief/ (clean URL)
 story.html             the evidence tour
-music.html             the listening room
+music.html             "off the clock" — the creative archive
 assets/css/style.css   dark console design system (light theme via html.light)
+assets/css/archive.css the archive's own world — palette, chapters, motion (music.html only)
 assets/js/main.js      gate scenes, theme, portrait reveal, rows, signals
 assets/js/story.js     tv intro, crt hum, broadcast scenes
-assets/js/music.js     sound check, hidden player, mute pill, eq wall
+assets/js/music.js     archive: intro, hidden player, mute pill, globe, counters, waves
 assets/js/data.js      ★ content data (SIGNALS) — edit this one
 assets/fonts/          Geist Pixel Square (vercel, OFL — see OFL-GeistPixel.txt)
 assets/img/portrait_PIXEL.png  pixel-art portrait (dark mode)

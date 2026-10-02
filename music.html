@@ -3,47 +3,353 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aawhan Vyas — The Music</title>
-  <meta name="description" content="The listening room — trees, by kurtains, on loop. Full track, no redirects, no embeds.">
+  <title>Aawhan Vyas — Off the Clock</title>
+  <meta name="description" content="The creative archive — music, edits and taste, outside the repositories. 2024–2026 in numbers, and everything still unreleased.">
+  <meta property="og:title" content="Off the Clock — a creative archive">
+  <meta property="og:description" content="Before the repositories, there were songs. And there still are.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://aawhan0.me/music.html">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=14">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css?v=16">
+  <link rel="stylesheet" href="assets/css/archive.css?v=2">
 </head>
-<body class="locked">
+<body class="archive locked">
 
-  <!-- ── sound check ───────────────────────────────────────── -->
-  <div class="tv" id="tv">
-    <div class="tv-inner">
-      <p class="tv-ch mono">aw sound division · ch 33</p>
-      <div class="tv-sig">
-        <div class="tv-bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
-        <p class="tv-note mono">tonight's loop — trees · kurtains</p>
+  <!-- ── sound check ────────────────────────────────────────────
+       Same gesture as the TV intro elsewhere on the site, retitled
+       for this room. -->
+  <div class="a-gate" id="a-gate">
+    <div>
+      <p class="a-gate-k">aawhan vyas · the other room</p>
+      <p class="a-gate-t">before the repositories, there were songs.</p>
+      <div class="a-gate-bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="a-gate-actions">
+        <button class="a-btn a-btn--solid" id="a-enter">open the archive</button>
+        <button class="a-btn" id="a-enter-quiet">skip the intro</button>
       </div>
-      <div class="tv-actions">
-        <button class="tv-btn mono solid" id="tv-play">▶ press play</button>
-        <button class="tv-btn mono" id="tv-silent">enter in silence</button>
-      </div>
-      <p class="tv-foot mono">full track · no redirects · just the song and the room</p>
+      <p class="a-gate-k" style="margin:2rem 0 0">sound is optional · nothing autoplays</p>
     </div>
   </div>
 
-  <!-- ── room scene ────────────────────────────────────────── -->
-  <canvas id="scene" aria-hidden="true"></canvas>
-  <div class="crt" aria-hidden="true"></div>
+  <canvas class="a-bg" id="a-bg" aria-hidden="true"></canvas>
+  <div class="a-wash" id="a-wash" aria-hidden="true"></div>
+  <div class="a-progress" aria-hidden="true"><i id="a-prog"></i></div>
 
   <a class="back mono" href="brief/">← on stage</a>
 
-  <main class="tour">
-    <section class="chapter chapter-end">
-      <p class="ch-k mono">now playing · on loop</p>
-      <h2 class="ch-big pixel-face"><span>trees</span> <em>—</em> kurtains</h2>
-      <p class="ch-p">the song this site hums while you read. w/ chanel rose n
-      zootzie — prod. kurtains + angelus. three minutes of late-hours
-      static, looped till you leave.</p>
-      <p class="ch-p mono ch-steps">corner toggle = mute · nothing here links out — the room keeps the record</p>
+  <button class="theme-toggle mono" id="theme-toggle" aria-label="toggle theme">
+    <span class="tt-sw" aria-hidden="true"></span><span id="tt-label">dark mode</span>
+  </button>
+
+  <main class="a-main">
+
+    <!-- ── 01 · the thesis ─────────────────────────────────── -->
+    <section class="a-ch" data-hue="265" id="c1">
+      <div class="a-inner a-hero">
+        <div>
+          <p class="a-k a-rv">01 · the whole thing in one line</p>
+          <h1 class="a-h a-rv" data-d="1">i make <em>things.</em></h1>
+          <p class="a-p a-rv" data-d="2">Software. Music. Edits. Whatever I'm curious about at 3am and
+          decide to finish anyway.</p>
+          <p class="a-p a-p--dim a-rv" data-d="3">The rest of this site is the engineering half. This is
+          the other one — everything I make that doesn't ship to a registry.</p>
+        </div>
+        <figure class="a-pop a-pop--big a-hero-art a-rv" data-d="4">
+          <img src="assets/img/archive/artist-profile.jpg" width="1000" height="1000"
+               alt="A high-contrast portrait, blown out to near-white, of the artist looking straight down the lens." loading="eager" decoding="async">
+          <figcaption class="a-pop-tag">no retouch / all of it</figcaption>
+        </figure>
+      </div>
     </section>
+
+    <!-- ── 02 · 2024 ────────────────────────────────────────── -->
+    <section class="a-ch" data-hue="205" id="c2">
+      <div class="a-inner">
+        <p class="a-k a-rv">02 · 2024 · the first year it wasn't just me</p>
+        <h2 class="a-h a-h--sm a-rv" data-d="1">191 people pressed play.</h2>
+        <div class="a-num-wrap a-rv" data-d="2">
+          <span class="a-num" data-count="191">191</span>
+          <span class="a-num-unit">listeners</span>
+        </div>
+        <p class="a-p a-rv" data-d="3">Out of nowhere, from <b>6 countries</b>. Nobody was
+        expecting that. Including me.</p>
+        <div class="a-stats a-rv" data-d="4">
+          <div class="a-stat"><div class="a-stat-v">1.39K</div><div class="a-stat-n">streams</div><div class="a-stat-k">start to finish</div></div>
+          <div class="a-stat"><div class="a-stat-v">47</div><div class="a-stat-n">hours</div><div class="a-stat-k">of actual listening</div></div>
+          <div class="a-stat"><div class="a-stat-v">76</div><div class="a-stat-n">saves</div><div class="a-stat-k">kept for later</div></div>
+          <div class="a-stat"><div class="a-stat-v">15</div><div class="a-stat-n">playlist adds</div><div class="a-stat-k">someone else's playlist</div></div>
+          <div class="a-stat"><div class="a-stat-v">34</div><div class="a-stat-n">shares</div><div class="a-stat-k">sent to a person</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 03 · the jump ────────────────────────────────────── -->
+    <section class="a-ch" data-hue="340" id="c3">
+      <div class="a-inner">
+        <p class="a-k a-rv">03 · 2025 · and then it got bigger</p>
+        <h2 class="a-h a-h--sm a-rv" data-d="1">somehow, <em>43 countries.</em></h2>
+        <div class="a-jump a-rv" data-d="2">
+          <div class="a-jump-item">
+            <span class="a-num a-num--sm" data-count="6">6</span>
+            <span class="a-num-unit">countries · 2024</span>
+          </div>
+          <span class="a-jump-arrow" aria-hidden="true">↓</span>
+          <div class="a-jump-item">
+            <span class="a-num a-num--sm a-num--hue" data-count="43">43</span>
+            <span class="a-num-unit">countries · 2025</span>
+          </div>
+        </div>
+        <div class="a-stats a-rv" data-d="3">
+          <div class="a-stat"><div class="a-stat-v">1.1K</div><div class="a-stat-n">listeners</div><div class="a-stat-k">roughly six times 2024</div></div>
+          <div class="a-stat"><div class="a-stat-v">2.1K</div><div class="a-stat-n">reported streams</div><div class="a-stat-k">as Spotify reported them</div></div>
+          <div class="a-stat"><div class="a-stat-v">72</div><div class="a-stat-n">hours</div><div class="a-stat-k">more than all of 2024</div></div>
+          <div class="a-stat"><div class="a-stat-v">35</div><div class="a-stat-n">playlist adds</div><div class="a-stat-k">more than double</div></div>
+        </div>
+      </div>
+    </section>
+
+  <!-- ── 04 · the world ───────────────────────────────────── -->
+    <section class="a-ch" data-hue="190" id="c4">
+      <div class="a-inner">
+        <p class="a-k a-rv">04 · where it went</p>
+        <h2 class="a-h a-h--sm a-rv" data-d="1">a small project,<br>somehow <em>somewhere.</em></h2>
+        <div class="a-globe-wrap a-rv" data-d="2">
+          <canvas class="a-globe" id="a-globe" width="720" height="720" role="img"
+            aria-label="Wireframe globe plotting five of the 43 countries reached in 2025: United States, United Kingdom, India, Romania and Germany."></canvas>
+        </div>
+        <p class="a-p a-p--dim a-rv" data-d="3">Five of the 43, plotted by real coordinates. The other 38
+        didn't get their own pin — this map only draws what's named here.</p>
+        <div class="a-legend a-rv" data-d="4">
+          <span><i></i>United States</span><span><i></i>United Kingdom</span><span><i></i>India</span>
+          <span><i></i>Romania</span><span><i></i>Germany</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 05 · the ones with faces ──────────────────────────── -->
+    <section class="a-ch" data-hue="300" id="c5s">
+      <div class="a-inner">
+        <p class="a-k a-rv">05 · the ones with faces</p>
+        <h2 class="a-h a-h--sm a-rv" data-d="1">three covers.<br><em>three songs.</em></h2>
+        <p class="a-p a-rv" data-d="2">Every release gets art before it gets a distributor. These
+        three earned theirs. Press one and it plays.</p>
+        <div class="a-singles a-rv" data-d="3">
+          <a class="a-single" href="https://music.youtube.com/watch?v=3_i3b2TWxtw" target="_blank" rel="noopener">
+            <span class="a-pop a-single-art">
+              <img src="assets/img/archive/aloof-cover.jpg" width="640" height="640"
+                   alt="Cover art for Aloof — a figure in red light facing a mirror, graffiti and peace signs on the wall behind." loading="lazy" decoding="async">
+            </span>
+            <span class="a-single-k">2023</span>
+            <span class="a-single-t">aloof</span>
+            <span class="a-single-go">listen ↗</span>
+          </a>
+          <a class="a-single" href="https://music.youtube.com/watch?v=sW_7vOBl5-k" target="_blank" rel="noopener">
+            <span class="a-pop a-single-art">
+              <img src="assets/img/archive/ionknow-cover.jpg" width="640" height="640"
+                   alt="Cover art for IONKNOW — a split frame, deep blue on one side and warm red on the other, shot in coarse grain." loading="lazy" decoding="async">
+            </span>
+            <span class="a-single-k">2023</span>
+            <span class="a-single-t">ionknow</span>
+            <span class="a-single-go">listen ↗</span>
+          </a>
+          <a class="a-single" href="https://music.youtube.com/watch?v=YV4f05Q7pyM" target="_blank" rel="noopener">
+            <span class="a-pop a-single-art">
+              <img src="assets/img/archive/dull-cover.jpg" width="810" height="900"
+                   alt="Cover art for DULL — a hooded figure in white standing before a brightly painted temple doorway." loading="lazy" decoding="async">
+            </span>
+            <span class="a-single-k">2023</span>
+            <span class="a-single-t">dull</span>
+            <span class="a-single-go">listen ↗</span>
+          </a>
+        </div>
+        <p class="a-p a-p--dim a-rv" data-d="4" style="margin-top:2rem">Artwork is mine. The songs are mine.
+        Everything here was made outside a release cycle.</p>
+      </div>
+    </section>
+
+    <section class="a-ch" data-hue="25" id="c5">
+      <div class="a-inner">
+        <p class="a-k a-rv">06 · the one that moved most</p>
+        <div class="a-song a-rv" data-d="1">
+          <div class="a-disc" aria-hidden="true"></div>
+          <div>
+            <h2 class="a-song-title">blues</h2>
+            <p class="a-p" style="margin-top:.8rem">Top track of 2025 by a distance. Spotify's own slide
+            for this track reported <b>2.5K streams</b> and <b>1K listeners</b>.</p>
+            <div class="a-stats" style="margin-top:1.4rem">
+              <div class="a-stat"><div class="a-stat-v">2.5K</div><div class="a-stat-n">streams</div><div class="a-stat-k">from the track's own slide</div></div>
+              <div class="a-stat"><div class="a-stat-v">1K</div><div class="a-stat-n">listeners</div><div class="a-stat-k">from the track's own slide</div></div>
+            </div>
+          </div>
+        </div>
+        <p class="a-p a-p--dim a-rv" data-d="2" style="margin-top:1.4rem">That slide says 2.5K. The
+        year in review says 2.1K. Both are quoted exactly as Spotify reported them — I've left the
+        disagreement alone rather than picking the tidier number.</p>
+      </div>
+    </section>
+
+    <!-- ── 06 · the one that moved most ───────────────────── -->
+    <section class="a-ch" data-hue="150" id="c6">
+      <div class="a-inner">
+        <p class="a-k a-rv">07 · audience depth</p>
+        <h2 class="a-h a-h--sm a-rv" data-d="1">a small group<br><em>listened a lot.</em></h2>
+        <div class="a-split a-rv" data-d="2">
+          <div class="a-split-cell">
+            <span class="a-num a-num--sm">3%</span>
+            <div class="a-bar" style="--w:3%"><i></i></div>
+            <p class="a-split-k">of listeners</p>
+          </div>
+          <div class="a-split-mid" aria-hidden="true">→</div>
+          <div class="a-split-cell a-split-cell--b">
+            <span class="a-num a-num--sm a-num--hue">29%</span>
+            <div class="a-bar" style="--w:29%"><i></i></div>
+            <p class="a-split-k">of streams</p>
+          </div>
+        </div>
+        <p class="a-p a-rv" data-d="3">Three percent of the people carried nearly a third of the
+        plays. <b>3 fans</b> had me in their top 10 artists.</p>
+      </div>
+    </section>
+
+    <!-- ── 08 · the exile ───────────────────────────────────── -->
+    <section class="a-ch a-ch--quiet" data-hue="0" id="c7">
+      <div class="a-inner">
+        <p class="a-k a-rv">08 · then i went into exile</p>
+        <h2 class="a-h a-rv" data-d="1">then i went<br><em>into exile.</em></h2>
+        <p class="a-p a-rv" data-d="2">2026, and I decided to go quiet on the public music side
+        on purpose. I wanted to get serious about engineering.</p>
+        <div class="a-cta a-rv" data-d="3" style="margin:0">
+          <span class="a-btn">ai</span><span class="a-btn">software</span>
+          <span class="a-btn">open source</span><span class="a-btn">systems</span>
+        </div>
+        <p class="a-p a-rv" data-d="4" style="margin-top:1.8rem;font-size:1.15rem;color:#d8d2cc">
+        I didn't stop making music.</p>
+        <p class="a-p a-rv" data-d="5">It's just under the hood now.</p>
+      </div>
+    </section>
+
+    <!-- ── 09 · the vault ──────────────────────────────────── -->
+    <section class="a-ch" data-hue="265" id="c8">
+      <div class="a-inner">
+        <p class="a-k a-rv">09 · the vault</p>
+        <h2 class="a-h a-h--sm a-rv" data-d="1">you haven't heard<br><em>everything.</em></h2>
+        <p class="a-p a-rv" data-d="2">There are tracks that never got a release date and edits that
+        never got a final export. A few fragments turn up on <b>@aaawhan</b> when they're ready to
+        be seen.</p>
+        <figure class="a-pop a-portrait a-rv" data-d="3" style="margin:0 0 1.8rem">
+          <img src="assets/img/archive/new-altgoth.png" width="1254" height="1254"
+               alt="A figure in a red hoodie and a knitted beanie, shot high-contrast against a blank white wall." loading="lazy" decoding="async">
+          <figcaption class="a-pop-tag">the red one · that's the one people ask about</figcaption>
+        </figure>
+        <div class="a-vault a-rv" data-d="3">
+          <div class="a-card">
+            <div class="a-card-top"><span class="a-card-t">untitled — 01</span><span class="a-card-lock">unreleased</span></div>
+            <div class="a-wave" data-wave="0.62" aria-hidden="true"></div>
+            <p class="a-card-note">Stops before it ends. That's where it is.</p>
+          </div>
+          <div class="a-card">
+            <div class="a-card-top"><span class="a-card-t">untitled — 02</span><span class="a-card-lock">wip</span></div>
+            <div class="a-wave" data-wave="0.78" aria-hidden="true"></div>
+            <p class="a-card-note">The second verse keeps changing. Leave it.</p>
+          </div>
+          <div class="a-card">
+            <div class="a-card-top"><span class="a-card-t">visual edit — 04</span><span class="a-card-lock">unfinished</span></div>
+            <div class="a-wave" data-wave="0.44" aria-hidden="true"></div>
+            <p class="a-card-note">Cut before the last shot landed.</p>
+          </div>
+        </div>
+        <p class="a-p a-p--dim a-rv" data-d="4">No titles, no dates. Those aren't mine to invent yet.</p>
+      </div>
+    </section>
+
+    <!-- ── 10 · the edits ───────────────────────────────────── -->
+    <section class="a-ch" data-hue="340" id="c9">
+      <div class="a-inner">
+        <p class="a-k a-rv">10 · other things i make</p>
+        <h2 class="a-h a-h--sm a-rv" data-d="1">when i'm not<br><em>writing code.</em></h2>
+        <p class="a-p a-rv" data-d="2">Edits, cuts, visual experiments — the kind of thing that exists
+        to be looked at once and thrown away. Not a studio. A place to mess around.</p>
+        <div class="a-collage a-rv" data-d="3">
+          <figure class="a-frame">
+            <span class="a-pop">
+              <img src="assets/img/archive/wall-art.jpg" width="760" height="760"
+                   alt="A figure in a cap against a concrete wall tagged with blue spray paint." loading="lazy" decoding="async">
+            </span>
+            <span class="a-frame-tag">cut 01</span>
+          </figure>
+          <figure class="a-frame">
+            <span class="a-pop">
+              <img src="assets/img/archive/newkirby.png" width="1254" height="1254"
+                   alt="A figure lit in hard red and black, both hands raised to the face, shot high-contrast." loading="lazy" decoding="async">
+            </span>
+            <span class="a-frame-tag">colour pass</span>
+          </figure>
+          <figure class="a-frame">
+            <span class="a-pop">
+              <img src="assets/img/archive/artist-profile.jpg" width="1000" height="1000"
+                   alt="A blown-out high-contrast frame of the artist looking straight into the lens." loading="lazy" decoding="async">
+            </span>
+            <span class="a-frame-tag">cut 02</span>
+          </figure>
+          <figure class="a-frame">
+            <span class="a-pop">
+              <img src="assets/img/archive/laying-down.jpg" width="862" height="862"
+                   alt="The artist lying on the floor mid-scroll, shot from above in flat daylight." loading="lazy" decoding="async">
+            </span>
+            <span class="a-frame-tag">cut 03</span>
+          </figure>
+        </div>
+        <p class="a-p a-rv" data-d="4" style="margin-top:1.8rem">More of it lives at <b>@aaw.core</b>.</p>
+      </div>
+    </section>
+
+    <!-- ── 11 · taste ───────────────────────────────────────── -->
+    <section class="a-ch" data-hue="190" id="c10">
+      <div class="a-inner">
+        <p class="a-k a-rv">11 · taste</p>
+        <h2 class="a-h a-h--sm a-rv" data-d="1">what goes in.</h2>
+        <div class="a-links a-rv" data-d="2">
+          <a class="a-link" href="https://www.last.fm/user/aaawhan" target="_blank" rel="noopener">
+            <span class="a-link-k">music in</span>
+            <span class="a-link-t">last.fm</span>
+            <span class="a-link-d">What actually gets played, scrobbled and forgotten about.</span>
+            <span class="a-link-go">open the rabbit hole ↗</span>
+          </a>
+          <a class="a-link" href="https://letterboxd.com/aaawhan/" target="_blank" rel="noopener">
+            <span class="a-link-k">film in</span>
+            <span class="a-link-t">letterboxd</span>
+            <span class="a-link-d">What I watched, and whether I'd watch it again.</span>
+            <span class="a-link-go">open the rabbit hole ↗</span>
+          </a>
+        </div>
+        <p class="a-p a-rv" data-d="3" style="margin-top:1.8rem;font-size:1.15rem;color:#fff">
+        And then — what comes out.</p>
+      </div>
+    </section>
+
+    <!-- ── 12 · now ─────────────────────────────────────────── -->
+    <section class="a-ch" data-hue="25" id="c11">
+      <div class="a-inner">
+        <p class="a-k a-rv">12 · 2026, right now</p>
+        <h2 class="a-h a-rv" data-d="1">still making<br><em>things.</em></h2>
+        <div class="a-out a-rv" data-d="2">
+          <div class="a-out-row"><span class="a-out-k">engineering</span><span class="a-out-d">is what I'm building publicly.</span></div>
+          <div class="a-out-row"><span class="a-out-k">music</span><span class="a-out-d">is what I'm still making quietly.</span></div>
+          <div class="a-out-row"><span class="a-out-k">visuals</span><span class="a-out-d">are what I play with when nobody's grading it.</span></div>
+          <div class="a-out-row"><span class="a-out-k">films + music</span><span class="a-out-d">are what keep feeding the system.</span></div>
+        </div>
+        <div class="a-cta a-rv" data-d="3">
+          <a class="a-btn a-btn--solid" href="brief/">the engineering half →</a>
+          <a class="a-btn" href="story.html">behind the scenes</a>
+          <a class="a-btn" href="https://github.com/aawhan0" target="_blank" rel="noopener">github</a>
+          <a class="a-btn" href="https://www.linkedin.com/in/aawhanvyas/" target="_blank" rel="noopener">linkedin</a>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ── music mute · trees — kurtains (hidden player) ─────── -->
@@ -56,6 +362,6 @@
   <iframe id="sc-widget" title="background music — trees by kurtains" allow="autoplay" tabindex="-1"
     src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fkurtains%2Ftree&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=true&amp;show_reposts=false&amp;buying=false&amp;sharing=false&amp;visual=false"></iframe>
 
-  <script src="assets/js/music.js?v=12" defer></script>
+  <script src="assets/js/music.js?v=13" defer></script>
 </body>
 </html>

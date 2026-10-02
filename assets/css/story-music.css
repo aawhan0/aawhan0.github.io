@@ -1,0 +1,152 @@
+/* ============================================================
+   story-music.css — the integration seam.
+
+   Loaded ONLY by story.html, AFTER style.css and AFTER
+   archive.css. Nothing here changes how either experience looks
+   on its own; every rule exists to stop one from leaking into
+   the other.
+
+   The archive's own rules already live under .a-* and
+   body.archive, so the job here is small and specific:
+
+     1. give the embedded archive its own ground + clip
+     2. re-seat its fixed backdrop layers inside that ground
+     3. hold the grain overlay over the music chapter only
+     4. keep story's fixed chrome above the archive
+   ============================================================ */
+
+/* ── the mount point ────────────────────────────────────────
+   .music-experience is the single boundary. archive.css scopes
+   its palette to this selector, so --ink/--pink/--hue and the
+   duotone rules resolve inside it and nowhere else.
+
+   NB: deliberately NOT overflow-x:clip here. Mixing a clip axis
+   with a visible one makes this box a scroll container, and a
+   scroll container becomes the containing block for its sticky
+   children — which silently un-pins the backdrop canvas and
+   sends it scrolling away with the chapters. The horizontal clip
+   lives on .a-main instead, which is where the rotated artwork
+   actually lives. */
+.music-experience {
+  position: relative;
+  isolation: isolate;
+  background: var(--ink, #08080c);
+  color: #f2f2f6;
+  font-family: "Inter", var(--ui);
+}
+
+/* clip the archive's own horizontal overflow, without making the
+   mount point a scroll container */
+.music-experience .a-main {
+  position: relative;
+  z-index: 2;
+  overflow-x: clip;
+}
+
+/* grain, scoped to the music chapter only. story keeps its own
+   .crt scanlines above this for the rest of the page. */
+.music-experience::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background-image: var(--grain);
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* ── backdrop layers, re-seated ─────────────────────────────
+   archive.css positions these `fixed` for the standalone page.
+   Here they become `sticky` inside the chapter, which produces
+   the same "fills the viewport while this section is on screen"
+   behaviour without escaping the section.
+
+   NB: <canvas> defaults to display:inline, and sticky does not
+   apply to inline-level boxes — it silently computes to static.
+   The block display below is load-bearing, not cosmetic. */
+.music-experience .a-bg,
+.music-experience .a-wash,
+.music-experience .a-progress {
+  position: sticky;
+  display: block;
+  inset: auto;
+}
+.music-experience .a-bg,
+.music-experience .a-wash {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100svh;
+}
+/* the rail hugs the right edge of the music chapter */
+.music-experience .a-progress {
+  top: 0;
+  right: 0;
+  height: 100svh;
+}
+
+/* the wash must not swallow clicks meant for the cards */
+.music-experience .a-wash { pointer-events: none; }
+
+/* ── keep the archive's own stacking below story's chrome ────
+   story.js paints #scene at z-index 0 and .crt at 1, under the
+   .tour content at 2. The archive sits inside .tour, so its
+   ground has to sit above the scanlines or the CRT effect would
+   print over the music. */
+.music-experience { z-index: 3; }
+
+/* while the archive is on screen, dim story's canvas + crt so
+   the two grounds never compete. story-music.js toggles this. */
+html.music-live #scene,
+html.music-live .crt { opacity: 0; }
+#scene,
+.crt { transition: opacity 0.6s ease; }
+
+/* ── the transitions ──────────────────────────────────────────
+   Two short chapters that hand off between the two worlds. They
+   deliberately reuse story's own .chapter vocabulary so they
+   feel like part of the broadcast rather than a bolt-on. */
+.chapter--handoff {
+  min-height: 100vh;
+}
+.chapter--handoff .ch-big { transition: filter 0.8s ease; }
+
+/* the return handoff is the last thing between the archive and the
+   sign off. At the full 100vh it left a whole empty viewport to
+   scroll through before anything new appeared, so it runs shorter —
+   the copy is short and needs no room to breathe. The outgoing
+   handoff (ch 06) keeps the full height: that one is a doorway, and
+   the pause before it opens is the point. */
+#handoff-in {
+  min-height: 62vh;
+  padding-block: 3rem;
+}
+
+/* the ground fades in ahead of the archive, so the eye is
+   already in the other world when the first card lands */
+.music-experience::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 30svh;
+  z-index: 0;
+  background: linear-gradient(to bottom, transparent, var(--ink, #08080c));
+  pointer-events: none;
+}
+
+/* ── the return bridge ───────────────────────────────────────
+   Symmetric with the ground fade above: the archive lifts back
+   out as the story returns. */
+.music-experience::after { /* grain, declared above */ }
+
+/* ── reduced motion ───────────────────────────────────────────
+   No sticky/parallax trickery; the archive simply reads as a
+   plain sequence of chapters, exactly as the standalone page
+   does when motion is off. */
+@media (prefers-reduced-motion: reduce) {
+  .music-experience .a-bg,
+  .music-experience .a-wash,
+  .music-experience .a-progress { position: absolute; }
+  #scene, .crt { transition: none; }
+}
